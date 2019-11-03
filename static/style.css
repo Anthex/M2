@@ -1,0 +1,54 @@
+body{  
+    font-family: 'Raleway', sans-serif;
+    font-size:15px;
+    color:#16312e;
+    background: #fff;;
+}
+ 
+h1 {
+    font-size:50px;
+}
+ 
+h3 {
+    font-size:22px;
+}
+ 
+#mapid{
+    width: 1000px; 
+    height: 600px; 
+    margin:0;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip{
+	color:#ffffff;
+	opacity:.9;
+	background: #16312e;
+	padding:2px;
+}
+
+.leaflet-popup-content-wrapper a,
+.leaflet-popup-tip a{
+	color:#44ffff;
+}
+
+.button {
+	background-color:#16312e;
+	border-radius:5px;
+	border:1px solid #566963;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	margin: 5px;
+	padding: 5px;
+}
+.button:hover {
+	background:linear-gradient(to bottom, #6c7c7c 5%, #768d87 100%);
+	background-color:#6c7c7c;
+}
+.button:active {
+	position:relative;
+	top:1px;
+}
+
+        

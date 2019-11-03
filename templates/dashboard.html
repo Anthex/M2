@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>Dashboard</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    <link rel="stylesheet" href="{{css_url}}">
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+    
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og==" crossorigin=""></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+</head>
+<body>
+
+
+<h1> Objects map </h1>
+<div id="mapid"></div>
+<script src="{{mapscript_url}}"></script>
+
+<a class="button" id="MB" onclick="showMB()" href="javascript:void(0)"> MapBox </a> <br/>
+<a class="button" id="OSM" onclick="showOSM()" href="javascript:void(0)"> OSM </a>
+
+
+</body>
+</html>
