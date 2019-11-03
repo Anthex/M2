@@ -99,7 +99,7 @@
 
     $.ajax({
         type: "GET",
-        url: 'http://localhost:5000/getGatewayPositions',
+        url: '/getGatewayPositions',
         dataType: 'json',
         success: function (response) {
             GWLayer = L.geoJson(response, options).addTo(map);}
@@ -116,7 +116,7 @@
     
     $.ajax({
         type: "GET",
-        url: 'http://localhost:5000/getGatewayPositions',
+        url: '/getGatewayPositions',
         dataType: 'json',
         success: function (response) {
             GWLayer = L.geoJson(response, {
@@ -139,7 +139,7 @@
 
     $.ajax({
         type: "GET",
-        url: 'http://localhost:5000/getTerminalPositions',
+        url: '/getTerminalPositions',
         dataType: 'json',
         success: function (response) {
             TMLayer = L.geoJson(response, {onEachFeature: onEachFeature, 
@@ -180,7 +180,7 @@
 
         $.ajax({
             type: "GET",
-            url: 'http://localhost:5000/history_path?id='.concat(e.target.feature.properties.id.toString()),
+            url: '/history_path?id='.concat(e.target.feature.properties.id.toString()),
             dataType: 'json',
             success: function (response) {
             HistoryLayer = L.geoJson(response, {style:pathStyle}).addTo(map);
@@ -188,7 +188,7 @@
             }});
         $.ajax({
             type: "GET",
-            url: 'http://localhost:5000/history?id='.concat(e.target.feature.properties.id.toString()),
+            url: '/history?id='.concat(e.target.feature.properties.id.toString()),
             dataType: 'json',
             success: function (response) {
             HistoryPathLayer = L.geoJson(response, {onEachFeature: onEachHistoryPoint, 

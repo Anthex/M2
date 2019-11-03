@@ -17,7 +17,7 @@ app.config.update(
 )
 
 if __name__ == "__main__":
-     app.run(debug=True)
+     app.run(debug=True,host='0.0.0.0')
 
 def readJSON(name):
      return app.open_resource('static/'+name+'.geojson').read().decode('UTF-8')
