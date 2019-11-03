@@ -21,7 +21,7 @@
     }
     
     function onEachGateway(feature, layer) {
-		layer.bindPopup(feature.properties.id.toString());
+		layer.bindPopup('GW#' + feature.properties.id.toString() + '<br/><a class="button" id="updateLocation" onclick="updateGatewayLocations()" href="javascript:void(0)"> update GW locations </a>');
 	}
     
     function onEachHistoryPoint(feature, layer) {
@@ -39,6 +39,47 @@
     }
     
     
+    function updateGatewayLocations(message) {
+        result = false;
+        $('<div class="dialogBox"></div>').appendTo('body')
+          .html('<div id="diagContent"><img src="static/images/caution.png", height=52px, width=52px></img>Any Available history for devices will be lost. This action cannot be undone.</div>')
+          .dialog({
+            title: 'Confirm Gateway repositionning',
+            autoOpen: true,
+            width: 400,
+            resizable: false,
+            buttons: {
+              Yes: function() {
+                result = true;
+                console.log(GWLayer._layers);
+                var GWInfo = [];
+                for (var i in GWLayer._layers) {
+                    var l = GWLayer._layers[i].feature.properties.id;
+                    var item = {l : GWLayer._layers[i].getLatLng()};
+                    GWInfo.push(item);
+                }
+                console.log(JSON.stringify(GWInfo));
+                $.ajax({
+                    url: '/updateGWLocations',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        $('#target').html(data.msg);
+                    },
+                    data: JSON.stringify(GWInfo)
+                });
+                $(this).dialog("close");
+              },
+              No: function() {
+                $(this).dialog("close");
+              }
+            },
+            close: function(event, ui) {
+              $(this).remove();
+            }
+          });
+      };
 
     function createCustomIcon (feature, latlng) {
         let myIcon = L.icon({
@@ -47,7 +88,7 @@
           iconAnchor:   [12, 12], // point of the icon which will correspond to marker's location
           popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
         })
-        return L.marker(latlng, { icon: myIcon })
+        return L.marker(latlng, { icon: myIcon , draggable:true})
       }
 
     let options = {

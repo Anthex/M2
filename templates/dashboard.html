@@ -15,7 +15,9 @@
 
     
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og==" crossorigin=""></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 </head>
 <body>
 
@@ -24,8 +26,13 @@
 <div id="mapid"></div>
 <script src="{{mapscript_url}}"></script>
 
-<a class="button" id="MB" onclick="showMB()" href="javascript:void(0)"> MapBox </a> <br/>
-<a class="button" id="OSM" onclick="showOSM()" href="javascript:void(0)"> OSM </a>
+<div id="controls">
+    <a class="button" id="MB" onclick="showMB()" href="javascript:void(0)"> MapBox </a> <br/>
+    <a class="button" id="OSM" onclick="showOSM()" href="javascript:void(0)"> OSM </a>
+    <br/>
+    <br/>
+    <a class="button" id="updateLocation" onclick="updateGatewayLocations()" href="javascript:void(0)"> update GW locations </a>
+</div>
 
 
 </body>

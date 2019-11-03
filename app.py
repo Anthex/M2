@@ -3,6 +3,7 @@ import requests
 import database
 import trilateration
 from flask.logging import create_logger
+from werkzeug.datastructures import ImmutableMultiDict
 import random
 
 app = Flask(__name__,static_url_path='/static')
@@ -46,7 +47,7 @@ def getGatewayPositions():
 
 #incoming : 3 RSSIs + ID, output : WSG coordinates + ID (stored in db)
 #check request with regex
-@app.route("/processRS", methods=['POST', 'GET'])
+@app.route("/processSample", methods=['POST', 'GET'])
 def processRS():
      #get GW positions
      GWLocations = database.getGWLocations()
@@ -73,6 +74,22 @@ def generateHistory():
 def generateHistoryPath():
      database.generateTMHistoryPath(int(request.args.get("id")))
      return app.send_static_file("history_path.geojson")
+
+#args : GW ID, RSSI value
+@app.route("/processRSSI")
+def processRSSI():
+     rssi = int(request.args.get("rssi"))
+     return ""
+
+@app.route("/updateGWLocations", methods=['POST'])
+def updateGWLocations():
+     newInfo = request.get_json()
+     newInfo_array = []
+     for k in newInfo:
+          newInfo_array.append(((k["l"]["lat"]), (k["l"]["lng"])))
+     database.updateGWLocations(newInfo_array)
+     database.generateGWJson()
+     return ""
 
 #debug : disable cache
 @app.after_request

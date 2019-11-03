@@ -114,3 +114,11 @@ def storeNewTMLocation(id, coord):
     session.add(newPos)
     session.add(newRecord)
     session.commit()
+
+def updateGWLocations(newLocs):
+    GWas = session.query(GW).all()
+    for k in GWas:
+        currentLocation = session.query(position).filter(position.ID == k.position).all()[0]
+        currentLocation.Latitude = newLocs[k.ID - 1][0]
+        currentLocation.Longitude = newLocs[k.ID - 1][1]
+    session.commit()
