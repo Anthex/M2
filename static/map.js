@@ -4,6 +4,11 @@
 	var mapboxlayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 		maxZoom: 24,
 		id: 'mapbox.streets'
+    });
+    
+    var mapboxdarklayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 24,
+		id: 'mapbox.dark'
 	});
     
     var osmlayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -11,7 +16,7 @@
     });
     
 
-    map.addLayer(mapboxlayer)
+    map.addLayer(mapboxdarklayer)
 
     function onEachFeature(feature, layer) {
 		layer.bindPopup('Terminal #'.concat(feature.properties.id.toString(), '<br/>Name : ', feature.properties.name,'<br/><a href=#"', feature.properties.id.toString(), '">Beep</a><br/>', feature.properties.timestamp));
@@ -30,7 +35,14 @@
     
     function showMB(){
         map.removeLayer(osmlayer);
+        map.removeLayer(mapboxlayer);
         map.addLayer(mapboxlayer);
+    }
+
+    function darkMode(){
+        map.removeLayer(mapboxlayer);
+        map.removeLayer(osmlayer);
+        map.addLayer(mapboxdarklayer);
     }
 
     function showOSM(){
@@ -83,7 +95,7 @@
 
     function createCustomIcon (feature, latlng) {
         let myIcon = L.icon({
-          iconUrl: 'static/images/GW.png',
+          iconUrl: 'static/images/gw.png',
           iconSize:     [25, 25], // width and height of the image in pixels
           iconAnchor:   [12, 12], // point of the icon which will correspond to marker's location
           popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor

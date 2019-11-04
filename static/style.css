@@ -1,10 +1,13 @@
 body{  
     font-family: 'Raleway', sans-serif;
     font-size:15px;
-	color:#0a294d;
+	color:#ffffff;
 	
-	background-color: #fff;
-
+	
+	background-color: #0f0f0f;
+	background: -webkit-linear-gradient(to right, #0f2027, #203a43, #2c5364);
+	background: linear-gradient(to right, #0f2027, #203a43, #2c5364); 
+	
 }
  
 h1 {
@@ -111,4 +114,9 @@ h3 {
 	border-radius: 5px;
 	padding: 10px;
 	background-color: #fff;
+}
+
+.leaflet-marker-icon {
+	background-color: #fff;;
+	border-radius: 20px;
 }

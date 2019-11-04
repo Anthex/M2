@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import requests
 import database
 import trilateration
+import RSSIBuffer
 from flask.logging import create_logger
 from werkzeug.datastructures import ImmutableMultiDict
 import random
@@ -53,7 +54,7 @@ def processRS():
      GWLocations = database.getGWLocations()
      #compute distances
      #distances = trilateration.computeDistances([int(request.args.get("d1")),int(request.args.get("d3")),int(request.args.get("d3"))])
-     distances = trilateration.computeDistances([random.randint(-100, -50),random.randint(-100, -50),random.randint(-100, -50)])
+     distances = trilateration.computeDistances([random.randint(-100, 0),random.randint(-100, 0),random.randint(-100, 0)])
      #trilateration
      TMCoordinates = trilateration.computeCoordinates(GWLocations, distances)
      #store in DB
