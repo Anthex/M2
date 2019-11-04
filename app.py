@@ -6,6 +6,7 @@ import RSSIBuffer
 from flask.logging import create_logger
 from werkzeug.datastructures import ImmutableMultiDict
 import random
+import urllib
 
 app = Flask(__name__,static_url_path='/static')
 log = create_logger(app)
@@ -53,8 +54,8 @@ def processRS():
      #get GW positions
      GWLocations = database.getGWLocations()
      #compute distances
-     #distances = trilateration.computeDistances([int(request.args.get("d1")),int(request.args.get("d3")),int(request.args.get("d3"))])
-     distances = trilateration.computeDistances([random.randint(-100, 0),random.randint(-100, 0),random.randint(-100, 0)])
+     distances = trilateration.computeDistances([float(request.args.get("d1")),float(request.args.get("d2")),float(request.args.get("d3"))])
+     #distances = trilateration.computeDistances([random.randint(-100, 0),random.randint(-100, 0),random.randint(-100, 0)])
      #trilateration
      TMCoordinates = trilateration.computeCoordinates(GWLocations, distances)
      #store in DB
@@ -76,11 +77,18 @@ def generateHistoryPath():
      database.generateTMHistoryPath(int(request.args.get("id")))
      return app.send_static_file("history_path.geojson")
 
-#args : GW ID, RSSI value
+#args : GW ID, RSSI value, TM id
 @app.route("/processRSSI")
 def processRSSI():
-     rssi = int(request.args.get("rssi"))
-     return ""
+     rssi = float(request.args.get("rssi"))
+     id = int(request.args.get("id"))
+     gwid = int(request.args.get("gwid"))
+     result = RSSIBuffer.addRSSI(id, gwid, rssi)
+     log.info(RSSIBuffer.incompleteSamples)
+     if result:
+          requests.post("http://localhost:5000/processSample?id="+str(gwid)+"&d1="+str(result[0])+"&d2="+str(result[1])+"&d3="+str(result[2]))
+          return "new sample processed"
+     return "no complete samples"
 
 @app.route("/updateGWLocations", methods=['POST'])
 def updateGWLocations():
