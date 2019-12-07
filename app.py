@@ -13,7 +13,6 @@ log = create_logger(app)
 database.generateTMJson()
 database.generateGWJson()
 
-
 app.config.update(
      ENV = "development"
 )
@@ -54,7 +53,10 @@ def processRS():
      #get GW positions
      GWLocations = database.getGWLocations()
      #compute distances
-     distances = trilateration.computeDistances([float(request.args.get("d1")),float(request.args.get("d2")),float(request.args.get("d3"))])
+     distances = trilateration.computeDistancesFriis([float(request.args.get("d1")),float(request.args.get("d2")),float(request.args.get("d3"))])
+     log.info([float(request.args.get("d1")),float(request.args.get("d2")),float(request.args.get("d3"))])
+     log.info(trilateration.computeDistances([float(request.args.get("d1")),float(request.args.get("d2")),float(request.args.get("d3"))]))
+     log.info(trilateration.computeDistancesFriis([float(request.args.get("d1")),float(request.args.get("d2")),float(request.args.get("d3"))]))
      #distances = trilateration.computeDistances([random.randint(-100, 0),random.randint(-100, 0),random.randint(-100, 0)])
      #trilateration
      TMCoordinates = trilateration.computeCoordinates(GWLocations, distances)
@@ -78,7 +80,7 @@ def generateHistoryPath():
      return app.send_static_file("history_path.geojson")
 
 #args : GW ID, RSSI value, TM id
-@app.route("/processRSSI")
+@app.route("/processRSSI", methods=['POST', 'GET'])
 def processRSSI():
      rssi = float(request.args.get("rssi"))
      id = int(request.args.get("id"))
@@ -86,11 +88,11 @@ def processRSSI():
      result = RSSIBuffer.addRSSI(id, gwid, rssi)
      log.info(RSSIBuffer.incompleteSamples)
      if result:
-          requests.post("http://localhost:5000/processSample?id="+str(gwid)+"&d1="+str(result[0])+"&d2="+str(result[1])+"&d3="+str(result[2]))
+          requests.post("http://localhost:5000/processSample?id="+str(id)+"&d1="+str(result[0])+"&d2="+str(result[1])+"&d3="+str(result[2]))
           return "new sample processed"
      return "no complete samples"
 
-@app.route("/updateGWLocations", methods=['POST'])
+@app.route("/updateGWLocations", methods=['POST', 'GET'])
 def updateGWLocations():
      newInfo = request.get_json()
      newInfo_array = []

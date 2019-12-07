@@ -6,9 +6,9 @@
 		id: 'mapbox.streets'
     });
     
-    var mapboxdarklayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+    var mapboxlightlayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 		maxZoom: 24,
-		id: 'mapbox.dark'
+		id: 'mapbox.light'
 	});
     
     var osmlayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -16,10 +16,16 @@
     });
     
 
-    map.addLayer(mapboxdarklayer)
+    map.addLayer(mapboxlightlayer)
 
-    function onEachFeature(feature, layer) {
-		layer.bindPopup('Terminal #'.concat(feature.properties.id.toString(), '<br/>Name : ', feature.properties.name,'<br/><a href=#"', feature.properties.id.toString(), '">Beep</a><br/>', feature.properties.timestamp));
+    function onEachTM(feature, layer) {
+		layer.bindPopup('Terminal #'.concat(feature.properties.id.toString(), '<br/>Name : ', feature.properties.name,'<br/><a href=javascript:void(0)', /*feature.properties.id.toString(),*/ '>Beep</a><br/>', feature.properties.timestamp));
+        layer.bindTooltip(feature.properties.name, {
+            permanent: false, 
+            direction: 'left',
+            className: "tt_tm",
+            offset: [0,0]
+        })
         layer.on({
             click: showHistory
         });
@@ -42,7 +48,7 @@
     function darkMode(){
         map.removeLayer(mapboxlayer);
         map.removeLayer(osmlayer);
-        map.addLayer(mapboxdarklayer);
+        map.addLayer(mapboxlightlayer);
     }
 
     function showOSM(){
@@ -100,7 +106,13 @@
           iconAnchor:   [12, 12], // point of the icon which will correspond to marker's location
           popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
         })
-        return L.marker(latlng, { icon: myIcon , draggable:true})
+        console.log(feature.properties.id);
+        return L.marker(latlng, { icon: myIcon , draggable:true}).bindTooltip(feature.properties.id.toString(), {
+            permanent: true, 
+            direction: 'left',
+            className: "tt",
+            offset: [0,-15]
+        })
       }
 
     let options = {
@@ -114,7 +126,8 @@
         url: '/getGatewayPositions',
         dataType: 'json',
         success: function (response) {
-            GWLayer = L.geoJson(response, options).addTo(map);}
+            GWLayer = L.geoJson(response, options).addTo(map);
+            map.fitBounds(GWLayer.getBounds());}
     });
 
     /* //alternative : use vector instead of icons
@@ -140,12 +153,12 @@
     */
 
     var TMStyle = {
-    "fillColor": "#34aeeb",
-    "color": "#4a4a4a",
-	"weight": 0,
+    "fillColor": "#0066ff",
+    "color": "transparent",
+	"weight": 40,
     "opacity": 1,
     "fillOpacity":1,
-    "radius": 6
+    "radius": 8
     };
    
 
@@ -154,7 +167,7 @@
         url: '/getTerminalPositions',
         dataType: 'json',
         success: function (response) {
-            TMLayer = L.geoJson(response, {onEachFeature: onEachFeature, 
+            TMLayer = L.geoJson(response, {onEachFeature: onEachTM, 
 	pointToLayer: function (feature, latlng) {
 		return L.circleMarker(latlng, TMStyle);
     }}
@@ -166,18 +179,18 @@
 
     
     var historyStyle = {
-        "fillColor": "#00aaaa",
+        "fillColor": "#000",
         "color": "#4a4a4a",
         "weight": 0,
-        "opacity": .5,
-        "fillOpacity":.5,
-        "radius": 3
+        "opacity": .8,
+        "fillOpacity":.3,
+        "radius": 5
         };
     
     var pathStyle = {
-        "color": "#5eff64",
-        "weight": 3,
-        "opacity": 0.5,
+        "color": "#0092cc",
+        "weight": 4,
+        "opacity": 0.7,
         "smoothFactor":1
     };
 
