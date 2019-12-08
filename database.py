@@ -79,8 +79,8 @@ def generateTMJson():
     newFile.write(newJSON)
     return True
 
-def generateTMHistory(id):
-    history = session.query(TM_record).filter(TM_record.TM_ID == id).all()
+def generateTMHistory(id, nbRecords=20):
+    history = session.query(TM_record).filter(TM_record.TM_ID == id).all()[-nbRecords:]
     newJSON = '{"type":"FeatureCollection","features":['
     for record in history:
         currentPos = session.query(position).filter(position.ID == record.position).all()[0]
@@ -92,8 +92,8 @@ def generateTMHistory(id):
     newFile.write(newJSON)
     return True
 
-def generateTMHistoryPath(id):
-    history = session.query(TM_record).filter(TM_record.TM_ID == id).all()
+def generateTMHistoryPath(id,nbRecords=20):
+    history = session.query(TM_record).filter(TM_record.TM_ID == id).all()[-nbRecords:]
     newJSON = '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":['
     for record in history:
         currentPos = session.query(position).filter(position.ID == record.position).all()[0]

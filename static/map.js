@@ -1,14 +1,18 @@
 
 	var map = L.map('mapid',{attributionControl: false}).setView([47.6426253, 6.8431032], 18);
+    var heat;
+    var HistoryLayer;
+    var HistoryPathLayer;
+    var heatpoints = [];
+    var firstShow = true; //dirty hack because hasLayer doesn't work, see if better workaround possible
     
 	var mapboxlayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 		maxZoom: 24,
 		id: 'mapbox.streets'
     });
     
-    var mapboxlightlayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+    var mapboxlightlayer = L.tileLayer('https://api.mapbox.com/styles/v1/anthex/ck3vz7gim2dtk1cmw9fq9by6t/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiYW50aGV4IiwiYSI6ImNrMmhxczQyMjEyb3kzYnA1dGVyZXlmbWIifQ.aC6F9_xNFDHnRcN9Y4ML0g', {
 		maxZoom: 24,
-		id: 'mapbox.light'
 	});
     
     var osmlayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -36,6 +40,9 @@
 	}
     
     function onEachHistoryPoint(feature, layer) {
+        //heat = L.heatLayer(geoJson2heat(feature)).addTo(map);
+        heatpoints.push([feature.geometry.coordinates[1],feature.geometry.coordinates[0], feature.properties.record_id/6+.5]);
+        //console.log(feature);
 		layer.bindPopup('Terminal #'.concat(feature.properties.id.toString(),'<br/>record #',feature.properties.record_id, '<br/>',feature.properties.timestamp));
     }
     
@@ -106,7 +113,6 @@
           iconAnchor:   [12, 12], // point of the icon which will correspond to marker's location
           popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
         })
-        console.log(feature.properties.id);
         return L.marker(latlng, { icon: myIcon , draggable:true}).bindTooltip(feature.properties.id.toString(), {
             permanent: true, 
             direction: 'left',
@@ -158,7 +164,8 @@
 	"weight": 40,
     "opacity": 1,
     "fillOpacity":1,
-    "radius": 8
+    "radius": 8,
+    "className":"tm"
     };
    
 
@@ -180,36 +187,38 @@
     
     var historyStyle = {
         "fillColor": "#000",
-        "color": "#4a4a4a",
-        "weight": 0,
         "opacity": .8,
         "fillOpacity":.3,
-        "radius": 5
+        "radius": 5,
+        "className": "historyPoint",
+        "color": "transparent",
+	    "weight": 10
         };
     
     var pathStyle = {
         "color": "#0092cc",
         "weight": 4,
         "opacity": 0.7,
-        "smoothFactor":1
-    };
+        "smoothFactor":1,
+        "className":"historyPath"
+        };
 
-    var firstShow = true; //dirty hack because hasLayer doesn't work, see if better workaround possible
     function showHistory(e) {
         if (!firstShow){
-            map.removeLayer(HistoryLayer);
+            map.removeLayer(heat);
             map.removeLayer(HistoryPathLayer);
+            map.removeLayer(HistoryLayer);
         }else{
             firstShow = false;
         }
-
+        heatpoints = [];
         $.ajax({
             type: "GET",
             url: '/history_path?id='.concat(e.target.feature.properties.id.toString()),
             dataType: 'json',
             success: function (response) {
-            HistoryLayer = L.geoJson(response, {style:pathStyle}).addTo(map);
-                    //map.fitBounds(TMLayer.getBounds());
+            HistoryLayer = L.geoJson(response, {style:pathStyle});
+            //map.fitBounds(TMLayer.getBounds());
             }});
         $.ajax({
             type: "GET",
@@ -220,14 +229,35 @@
         pointToLayer: function (feature, latlng) {
             return L.circleMarker(latlng, historyStyle);
         }}
-        ).addTo(map);
+        );
+        heat = L.heatLayer(heatpoints,{radius: 35, minOpacity:.2, blur:25, gradient:{0.4: '#0e85e7', 0.65: '#f9ffbf', 1: '#fa004b'}});
+        //HistoryLayer.addTo(map);
+        HistoryPathLayer.addTo(map);
+        heat.addTo(map);
+
                 //map.fitBounds(TMLayer.getBounds());
             }
         });
 
     }
 	function onMapClick(e) {
-        //map.removeLayer(TMLayer);
+        /*
+        if (!firstShow){
+            map.removeLayer(heat);
+            map.removeLayer(HistoryPathLayer);
+            map.removeLayer(HistoryLayer);
+        }
+        */
 	}
 
 	map.on('click', onMapClick);
+
+    function geoJson2heat(geojson, intensity) {
+        return geojson.features.map(function(feature) {
+          return [
+            feature.geometry.coordinates[0][1],
+            feature.geometry.coordinates[0][0],
+            feature.properties[intensity]
+          ];
+        });
+      }

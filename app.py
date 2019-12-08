@@ -28,7 +28,7 @@ def dashboard():
      #app.logger.info(GWs)
 
      database.generateTMJson()
-     return render_template('dashboard.html', css_url="static/style.css", mapscript_url="static/map.js")
+     return render_template('dashboard.html', css_url="static/style.css", mapscript_url="static/map.js", heat_url="static/leaflet-heat.js")
 
 #update record TM GeoJSON
 @app.route("/update")
@@ -46,7 +46,7 @@ def getTerminalPositions():
 def getGatewayPositions():
      return app.send_static_file("GW.geojson")
 
-#incoming : 3 RSSIs + ID, output : WSG coordinates + ID (stored in db)
+#incoming : 3 RSSIs + ID, output : WGS coordinates + ID (stored in db)
 #check request with regex
 @app.route("/processSample", methods=['POST', 'GET'])
 def processRS():

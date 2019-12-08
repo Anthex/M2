@@ -26,7 +26,7 @@ body{
 }
  
 h1 {
-	font-size:50px;
+	font-size:30px;
 	text-align:center;
 
 }
@@ -36,12 +36,13 @@ h3 {
 }
  
 #mapid{
-    width: 1400px; 
-    height: 600px; 
+    width: 90%; 
+    height: 700px; 
 	margin:0 auto;
 	z-index:0 !important;
 	border:2px solid #575757;
 	border-radius: 5px;
+	background: #fff;
 }
 
 .leaflet-popup-content-wrapper,
@@ -136,7 +137,7 @@ h3 {
 	margin: 0 auto;
 	margin-top: 10px;
 	display: flex;
-	width: 1380px;
+	width: 70%;
 	border:2px solid #575757;
 	border-radius: 5px;
 	padding: 10px;
@@ -146,12 +147,12 @@ h3 {
 .leaflet-marker-icon {
 	transition-duration: 0.4s;
 	background-color: #ffffff;
-	border: 2px solid #002e53;
+	border: 3px solid #002e53;
 	border-radius: 20px;
 	opacity:.7;
 	box-sizing: border-box;
 	box-shadow:  0 0 0 0px #056abd;
-	animation: idle 10s ease-out infinite forwards;
+	animation: idle 8s ease-in-out infinite forwards;
 }
 
 .leaflet-marker-icon:hover{
@@ -177,11 +178,15 @@ h3 {
 
 @keyframes idle {
 80% {
-
+	border: 3px solid #002e53;
 	box-shadow:  0 0 0 2px #056abd;
+}
+90%{
+	border: 3px solid #ff006a;	
 }
 100% {
 	background-color:#fff;
+	border: 3px solid #002e53;
 	box-shadow:  0 0 0 300px  transparent;
 }
 }
@@ -206,6 +211,53 @@ h3 {
   border-right-color: transparent;
 }
 
+
 .tm{
-	border: 10px solid red!important;
+	fill:#0e85e7;
+	transition: stroke .3s ease-in-out, stroke-opacity .3s ease-in-out, stroke-width .5s ease-in-out;
+	stroke-opacity: 0;
+	stroke: #fa004b;
+}
+.tm:hover{
+	transition: stroke .3s ease-in-out, stroke-opacity .3s ease-in-out, stroke-width .3s ease-in-out;
+	fill: #fa004b;
+	stroke-width: 50;
+	stroke: #fa004b;
+	stroke-opacity: .1;
+}
+
+.tt_tm::before {
+	border-left-color: transparent;
+  }
+.tt_tm::before {
+	border-right-color: transparent;
+}
+.tt_tm{
+	background: #333333;
+	color: #fff;
+	border: 0px solid black;
+	border-right-color: transparent;
+	margin-left: -40px;
+	box-shadow: none;
+}
+
+.historyPoint{
+	opacity:1;
+	stroke-opacity: .0;
+	fill: #3f3f3f;
+	stroke: #2db2ff;
+	transition: stroke .3s ease-in-out, stroke-opacity .3s ease-in-out, stroke-width .5s ease-in-out, fill .5s ease-in-out;
+
+}
+.historyPoint:hover{
+	transition: stroke .3s ease-in-out, stroke-opacity .3s ease-in-out, stroke-width .5s ease-in-out, fill .5s ease-in-out;
+	fill: #df0038;
+	stroke-width: 15;
+	stroke: #ff2d49;
+	stroke-opacity: .5;
+	opacity:1;
+}
+
+.historyPath{
+	opacity:.2;
 }
