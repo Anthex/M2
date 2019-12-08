@@ -28,7 +28,7 @@ def dashboard():
      #app.logger.info(GWs)
 
      database.generateTMJson()
-     return render_template('dashboard.html', css_url="static/style.css", mapscript_url="static/map.js", heat_url="static/leaflet-heat.js")
+     return render_template('dashboard.html', css_mobile_url="static/css_mobile.css", css_url="static/style.css", mapscript_url="static/map.js", heat_url="static/leaflet-heat.js")
 
 #update record TM GeoJSON
 @app.route("/update")

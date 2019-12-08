@@ -1,5 +1,5 @@
 
-	var map = L.map('mapid',{attributionControl: false}).setView([47.6426253, 6.8431032], 18);
+	var map = L.map('mapid',{zoomControl: false, attributionControl: false}).setView([47.6426253, 6.8431032], 18);
     var heat;
     var HistoryLayer;
     var HistoryPathLayer;
@@ -23,7 +23,10 @@
     map.addLayer(mapboxlightlayer)
 
     function onEachTM(feature, layer) {
-		layer.bindPopup('Terminal #'.concat(feature.properties.id.toString(), '<br/>Name : ', feature.properties.name,'<br/><a href=javascript:void(0)', /*feature.properties.id.toString(),*/ '>Beep</a><br/>', feature.properties.timestamp));
+		//layer.bindPopup('Terminal #'.concat(feature.properties.id.toString(), '<br/>Name : ', feature.properties.name,'<br/><a href=javascript:void(0)', /*feature.properties.id.toString(),*/ '>Beep</a><br/>', feature.properties.timestamp));
+        layer.on('click', function (e) {
+            document.getElementById("info").innerHTML = 'Terminal #'.concat(feature.properties.id.toString(), '<br/>Name : ', feature.properties.name,'<br/>', feature.properties.timestamp, '<br/><a href=javascript:void(0)', /*feature.properties.id.toString(),*/ '>Beep</a>');
+        });
         layer.bindTooltip(feature.properties.name, {
             permanent: false, 
             direction: 'left',
