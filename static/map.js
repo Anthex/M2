@@ -233,6 +233,7 @@
             return L.circleMarker(latlng, historyStyle);
         }}
         );
+        L.circleMarker(e.latlng, {"className": "activeTM"}).addTo(HistoryPathLayer);
         heat = L.heatLayer(heatpoints,{radius: 35, minOpacity:.2, blur:25, gradient:{0.4: '#0e85e7', 0.65: '#f9ffbf', 1: '#fa004b'}});
         //HistoryLayer.addTo(map);
         HistoryPathLayer.addTo(map);
@@ -264,3 +265,4 @@
           ];
         });
       }
+

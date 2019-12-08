@@ -315,3 +315,19 @@ a{
 	  opacity:1;
 	}
   }
+
+  .activeTM{
+	  stroke: #ffffff;
+	  animation: activeTM 1s ease-in-out infinite alternate;
+	  
+  }
+  @keyframes activeTM {
+	0% {
+		stroke: #ffffff;
+		stroke-width:4px;
+	}
+	100% {
+		stroke: transparent;
+		stroke-width:0px;
+	}
+  }
