@@ -41,7 +41,7 @@
     
     function onEachHistoryPoint(feature, layer) {
         //heat = L.heatLayer(geoJson2heat(feature)).addTo(map);
-        heatpoints.push([feature.geometry.coordinates[1],feature.geometry.coordinates[0], feature.properties.record_id/6+.5]);
+        heatpoints.push([feature.geometry.coordinates[1],feature.geometry.coordinates[0], feature.properties.record_id/7+.5]);
         //console.log(feature);
 		layer.bindPopup('Terminal #'.concat(feature.properties.id.toString(),'<br/>record #',feature.properties.record_id, '<br/>',feature.properties.timestamp));
     }
