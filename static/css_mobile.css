@@ -7,7 +7,7 @@ h1
 #controls{
     left:auto;
     right:auto;
-    font-size: 20px;
+    font-size: 17px;
     top:auto;
     bottom:0px;
     padding:0;
@@ -31,9 +31,11 @@ h1
 .button{
     margin:0;
     border-radius: 0;
-    font-size: 18px;
-    padding:2px;
+    font-size: 15px;
+    padding:auto;
     text-align:center;
+    display: inline-flex;
+    align-items: center; 
 }
 
 .dialogBox{
@@ -44,4 +46,12 @@ h1
     width:95%!important;
     padding:0px!important;
     border-width:0px;
+}
+
+.dialog{
+    bottom:70px;
+}
+
+.test{
+    display:none;
 }
