@@ -71,7 +71,7 @@ a{
 #info{
 	position: absolute; 
 	padding:5px;
-	display: table;
+	display: inline-block;
 	left:5px;
 	top:55px;
 	z-index: 5;
@@ -343,7 +343,7 @@ a{
 	text-align: center;
 	font-size: 20px;
 	font-weight: bold;
-	z-index: 7;
+	z-index: 10;
 	padding:15px;
 	border-radius: 5px;
 }
@@ -356,4 +356,70 @@ a{
 #error{
 	background: rgba(255, 0, 21, 0.6);
 	color: #fff;
+}
+
+.test{
+	position: relative;
+	display: inline-block;
+	text-shadow: 2px 0 0 #ffffff, 1px 1px 0 #ffffff, 0 1px 0 #ffffff, -1px 1px 0 #ffffff, -1px 0 0 #ffffff, -1px -1px 0 #ffffff, 0 -1px 0 #ffffff, 1px -1px 0 #ffffff;
+	border: 1px solid rgba(0,0,0, .4);
+	color:#000;
+	background-color: rgba(255, 255, 255, 0.4);
+	background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, .2) 10px, rgba(0, 0, 0, .2) 20px);
+}
+
+.test:hover{
+	text-shadow: none;
+}
+
+.test:hover::after{
+	text-shadow: none;
+	color:rgb(255, 255, 255);
+	position: absolute;
+	font-size:13px;
+	content: "Warning: Debugging or experimental feature";
+	width:100%;
+	top: 50px;
+	right:0%;
+	padding: 10px 0 10px 0;
+	background-color: rgba(250, 0, 42, 0.8);
+	background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, .1) 10px, rgba(0, 0, 0, 0.1) 20px);
+	border-radius: 5px;
+	white-space: wrap;
+	text-align: center;
+	animation: fadeInUp .2s ease-out 1 forwards;
+	min-width: 100px;
+}
+
+@keyframes fadeInUp {
+    from {
+		padding: 0;
+		opacity:0;
+    }
+
+    to {
+		padding: 10px 0 10px 0;
+        opacity: 1
+    }
+}
+
+.beepButton{
+	transition-duration: .3s;
+	margin-top:20px!important;
+	border-radius: 10px;
+	text-align: center;
+	width:100%;
+}
+
+.beepButton:hover{
+	transition-duration: .3s;
+	background-color: rgba(255,255,255,.5);
+	color:#fa004b;
+}
+
+.confirmBeep{
+	position: absolute;
+	z-index: 10;
+	width:300px;
+	height:400px;
 }

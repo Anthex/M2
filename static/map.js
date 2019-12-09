@@ -1,10 +1,13 @@
-
+//leaflet layers
 var map = L.map('mapid',{zoomControl: false, attributionControl: false}).setView([47.6426253, 6.8431032], 18);
 var heat;
 var HistoryLayer;
 var HistoryPathLayer;
+var TMLayer;
+
 var heatpoints = [];
 var firstShow = true; //dirty hack because hasLayer doesn't work, see if better workaround possible
+var t1, t2; //timeouts for info and error displays
 
 var mapboxlayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
     maxZoom: 24,
@@ -25,7 +28,7 @@ map.addLayer(mapboxlightlayer)
 function onEachTM(feature, layer) {
     //layer.bindPopup('Terminal #'.concat(feature.properties.id.toString(), '<br/>Name : ', feature.properties.name,'<br/><a href=javascript:void(0)', /*feature.properties.id.toString(),*/ '>Beep</a><br/>', feature.properties.timestamp));
     layer.on('click', function (e) {
-        document.getElementById("info").innerHTML = 'Terminal #'.concat(feature.properties.id.toString(), '<br/>Name : ', feature.properties.name,'<br/>', feature.properties.timestamp, '<br/><a href=javascript:void(0)', /*feature.properties.id.toString(),*/ '>Beep</a>');
+        document.getElementById("info").innerHTML = 'Terminal #'.concat(feature.properties.id.toString(), '<br/>Name : ', feature.properties.name,'<br/>', feature.properties.timestamp, '<br/><a class="beepButton"href=javascript:void(0) onclick=sendBeepDialog(', feature.properties.id, ') >Play sound</a>');
     });
     layer.bindTooltip(feature.properties.name, {
         permanent: false, 
@@ -272,6 +275,8 @@ function geoJson2heat(geojson, intensity) {
     }
 
 function displayInfo(text='Success', time=3000){
+    clearTimeout(t1);
+    clearTimeout(t2);
     [].forEach.call(document.querySelectorAll('.dialog'),function(e){
         e.parentNode.removeChild(e);
       });
@@ -279,15 +284,17 @@ function displayInfo(text='Success', time=3000){
     .html(text)
     .fadeIn('slow');
 
-    setTimeout(function() {
+    t1 = setTimeout(function() {
         $('#success').fadeOut('slow');
     }, time);
-    setTimeout(function() {
+    t2 = setTimeout(function() {
         $('#success').remove();
     }, time+1000);
 };
 
 function displayError(text='Error', time=3000){
+    clearTimeout(t1);
+    clearTimeout(t2);
     [].forEach.call(document.querySelectorAll('.dialog'),function(e){
         e.parentNode.removeChild(e);
       });
@@ -295,10 +302,48 @@ function displayError(text='Error', time=3000){
     .html(text)
     .fadeIn('slow');
 
-    setTimeout(function() {
+    t1 = setTimeout(function() {
         $('#error').fadeOut('slow');
     }, time);
-    setTimeout(function() {
+    t2 = setTimeout(function() {
         $('#error').remove();
     }, time+1000);
 };
+
+function sendBeepDialog(id){
+    getTMNameById(TMLayer);
+    $('<div class="dialogBox"></div>').appendTo('body')
+        .html('<div id="diagContent">Play sound on <span  style="font-weight:bold">' + getTMNameById(id) + '</span>?</div>')
+        .dialog({
+        title: 'Confirm sound request',
+        autoOpen: true,
+        width: 400,
+        resizable: false,
+        buttons: {
+            Yes: function() {
+                //SEND AJAX REQUEST HERE
+                $(this).dialog("close");
+                displayInfo("Sound request sent, the device will beep for 1 minute <br/><a href='#' onclick='cancelBeepRequest(" + id.toString() + ")'>cancel</a>", 10000);
+            },
+            No: function() {
+                $(this).dialog("close");
+            }
+        },
+        close: function(event, ui) {
+            $(this).remove();
+        }
+        });
+};
+
+function cancelBeepRequest(id){
+    displayError("Cancel requested on terminal " + id.toString() + "<br/>Not yet implemented", 5000);
+}
+
+function getTMNameById(id,layer=TMLayer){
+    for(var feat in layer._layers){
+        if(layer._layers[feat].feature.properties.id == id){
+            return layer._layers[feat].feature.properties.name;
+        }
+    }
+    return null;
+}

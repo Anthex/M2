@@ -11,7 +11,7 @@ h1
     top:auto;
     bottom:0px;
     padding:0;
-
+    background: rgba(50,50,50,.3);
 }   
 
 #info{
