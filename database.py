@@ -122,3 +122,11 @@ def updateGWLocations(newLocs):
         currentLocation.Latitude = newLocs[k.ID - 1][0]
         currentLocation.Longitude = newLocs[k.ID - 1][1]
     session.commit()
+
+def changeName(id, newName):
+    tmToChange = session.query(TM).filter(TM.ID == id).all()[0]
+    if tmToChange and len(newName) > 0:
+        tmToChange.Name = newName
+        session.commit()
+        return True
+    return False

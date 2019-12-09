@@ -24,11 +24,17 @@ var osmlayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 
 
 map.addLayer(mapboxlightlayer)
+updateTMLocations();
 
 function onEachTM(feature, layer) {
     //layer.bindPopup('Terminal #'.concat(feature.properties.id.toString(), '<br/>Name : ', feature.properties.name,'<br/><a href=javascript:void(0)', /*feature.properties.id.toString(),*/ '>Beep</a><br/>', feature.properties.timestamp));
     layer.on('click', function (e) {
-        document.getElementById("info").innerHTML = 'Terminal #'.concat(feature.properties.id.toString(), '<br/>Name : ', feature.properties.name,'<br/>', feature.properties.timestamp, '<br/><a class="beepButton"href=javascript:void(0) onclick=sendBeepDialog(', feature.properties.id, ') >Play sound</a>');
+        document.getElementById("info").innerHTML = 'Terminal #'.concat(feature.properties.id.toString(), 
+        '<br/>Name : ', 
+        feature.properties.name,'<br/>', 
+        feature.properties.timestamp, 
+        '<br/><a class="infoButton"href=javascript:void(0) onclick=changeTerminalName(', feature.properties.id, ') >Change terminal name</a>',
+        '<br/><a class="infoButton"href=javascript:void(0) onclick=sendBeepDialog(', feature.properties.id, ') >Play sound</a>');
     });
     layer.bindTooltip(feature.properties.name, {
         permanent: false, 
@@ -80,7 +86,7 @@ function updateGatewayLocations(message) {
         width: 400,
         resizable: false,
         buttons: {
-            Yes: function() {
+            Confirm: function() {
             result = true;
             console.log(GWLayer._layers);
             var GWInfo = [];
@@ -107,7 +113,7 @@ function updateGatewayLocations(message) {
             });
             $(this).dialog("close");
             },
-            No: function() {
+            Cancel: function() {
             $(this).dialog("close");
             }
         },
@@ -179,20 +185,24 @@ var TMStyle = {
 "className":"tm"
 };
 
-
-$.ajax({
-    type: "GET",
-    url: '/getTerminalPositions',
-    dataType: 'json',
-    success: function (response) {
-        TMLayer = L.geoJson(response, {onEachFeature: onEachTM, 
-pointToLayer: function (feature, latlng) {
-    return L.circleMarker(latlng, TMStyle);
-}}
-).addTo(map);
-        //map.fitBounds(TMLayer.getBounds());
+function updateTMLocations(){
+    if (map.hasLayer(TMLayer)){
+        map.removeLayer(TMLayer);
     }
-});
+    $.ajax({
+        type: "GET",
+        url: '/getTerminalPositions',
+        dataType: 'json',
+        success: function (response) {
+            TMLayer = L.geoJson(response, {onEachFeature: onEachTM, 
+    pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, TMStyle);
+    }}
+    ).addTo(map);
+            //map.fitBounds(TMLayer.getBounds());
+        }
+    });
+}
 
 
 
@@ -282,7 +292,7 @@ function displayInfo(text='Success', time=3000){
       });
     $('<div id="success" class="dialog"></div>').hide().appendTo('body')
     .html(text)
-    .fadeIn('slow');
+    .show();
 
     t1 = setTimeout(function() {
         $('#success').fadeOut('slow');
@@ -300,7 +310,7 @@ function displayError(text='Error', time=3000){
       });
     $('<div id="error" class="dialog"></div>').hide().appendTo('body')
     .html(text)
-    .fadeIn('slow');
+    .show();
 
     t1 = setTimeout(function() {
         $('#error').fadeOut('slow');
@@ -346,4 +356,51 @@ function getTMNameById(id,layer=TMLayer){
         }
     }
     return null;
+}
+
+function changeTerminalName(id){
+    $('<div class="dialogBox"></div>').appendTo('body')
+        .html('<div id="diagContent">Change name of <span  style="font-weight:bold">' + getTMNameById(id) + '</span> to : <input placeholder="New name" type="text" autocomplete="off" id="newName"></div>')
+        .dialog({
+        title: 'Confirm name Change',
+        autoOpen: true,
+        width: 400,
+        resizable: false,
+        buttons: {
+            Confirm: function() {
+                var newName = document.getElementById("newName").value;
+
+                
+                if (newName){
+                    console.log(id, newName);
+                    $.ajax({
+                    url: '/updateName',
+                    type: 'get',
+                    data: $.param({
+                        id:id,
+                        newName:newName
+                    }),
+                    success: function (data) {
+                        displayInfo('Name changed successfully');
+                        setTimeout(function() {
+                            updateTMLocations();
+                        }, 0);
+                    },
+                    error: function (data) {
+                        displayError('Could not change name');
+                    },
+                });
+                    $(this).dialog("close");
+                }else{
+                    displayError("Name must not be empty");
+                }
+            },
+            Cancel: function() {
+                $(this).dialog("close");
+            }
+        },
+        close: function(event, ui) {
+            $(this).remove();
+        }
+        });
 }

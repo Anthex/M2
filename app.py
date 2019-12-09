@@ -39,6 +39,7 @@ def update():
 #return geoJSON file containing the latest position for all terminals
 @app.route("/getTerminalPositions")
 def getTerminalPositions():
+     database.generateTMJson()
      return app.send_static_file("TM.geojson")
 
 #return geoJSON file containing the GW positions
@@ -102,6 +103,15 @@ def updateGWLocations():
      database.generateGWJson()
      return ("success", 200)
 
+@app.route("/updateName", methods=['POST', 'GET'])
+def updateName():
+     id = int(request.args.get("id"))
+     name = request.args.get("newName")
+     if id and len(name) > 0:
+          database.changeName(id, name)
+          return ("success", 200)
+     return ("error", 500)
+
 #debug : disable cache
 @app.after_request
 def add_header(r):
@@ -114,3 +124,4 @@ def add_header(r):
     r.headers["Expires"] = "0"
     r.headers['Cache-Control'] = 'public, max-age=0'
     return r
+
