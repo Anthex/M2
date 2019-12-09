@@ -100,7 +100,7 @@ def updateGWLocations():
           newInfo_array.append(((k["l"]["lat"]), (k["l"]["lng"])))
      database.updateGWLocations(newInfo_array)
      database.generateGWJson()
-     return ""
+     return ("success", 200)
 
 #debug : disable cache
 @app.after_request

@@ -156,7 +156,7 @@ a{
 	padding:0px!important;
 	float: left!important;
 	margin-right:20px!important;
-	filter: hue-rotate(14deg);
+	filter: hue-rotate(5deg) brightness(140%);
 }
 
 .ui-dialog-titlebar{
@@ -167,7 +167,7 @@ a{
 
 .ui-widget-header{
 	color: #fff!important;
-	background : #0a4364!important;
+	background : #006eb3!important;
 }
 
 .ui-button{
@@ -331,3 +331,29 @@ a{
 		stroke-width:0px;
 	}
   }
+
+.dialog{
+	position: absolute;
+	bottom:20px;
+	left: 0; 
+	right: 0; 
+	margin-left: auto; 
+	margin-right: auto; 
+	width:300px;
+	text-align: center;
+	font-size: 20px;
+	font-weight: bold;
+	z-index: 7;
+	padding:15px;
+	border-radius: 5px;
+}
+
+#success{
+	background: rgba(0, 153, 255, 0.6);
+	color: #fff;
+}
+
+#error{
+	background: rgba(255, 0, 21, 0.6);
+	color: #fff;
+}
