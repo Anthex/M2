@@ -99,10 +99,13 @@ def updateGWLocations():
      newInfo_array = []
      for k in newInfo:
           newInfo_array.append(((k["l"]["lat"]), (k["l"]["lng"])))
-     database.updateGWLocations(newInfo_array)
+     result = database.updateGWLocations(newInfo_array)
      database.generateGWJson()
-     return ("success", 200)
-
+     if result:
+          return ("success", 200)
+     else:
+          return ("error when updating GW locations", 500)
+          
 @app.route("/updateName", methods=['POST', 'GET'])
 def updateName():
      id = int(request.args.get("id"))

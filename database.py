@@ -46,20 +46,24 @@ def getGWLocations():
 
 #builds the geoJSON file containing the info about the GWs
 def generateGWJson():
-    GWs = session.query(GW).all()
-    Coordinates = []
-    for k in GWs:
-        pos = session.query(position).filter(position.ID == k.ID).all()[0]
-        Coordinates.append((pos.Longitude,pos.Latitude, k.ID))
-    newJSON = '{"type":"FeatureCollection","features":['
-    for c in Coordinates:
-        newJSON += f'{{"type":"Feature","properties":{{"id":{c[2]}}},"geometry":{{"type":"Point","coordinates":[{c[0]},{c[1]}]}}}}'
-        if c != Coordinates[-1]:
-            newJSON += ','
-    newJSON += ']}'
-    newFile = open("static/GW.geojson", "w+")
-    newFile.write(newJSON)
-    return True
+    try:
+        GWs = session.query(GW).all()
+        Coordinates = []
+        for k in GWs:
+            pos = session.query(position).filter(position.ID == k.ID).all()[0]
+            Coordinates.append((pos.Longitude,pos.Latitude, k.ID))
+        newJSON = '{"type":"FeatureCollection","features":['
+        for c in Coordinates:
+            newJSON += f'{{"type":"Feature","properties":{{"id":{c[2]}}},"geometry":{{"type":"Point","coordinates":[{c[0]},{c[1]}]}}}}'
+            if c != Coordinates[-1]:
+                newJSON += ','
+        newJSON += ']}'
+        newFile = open("static/GW.geojson", "w+")
+        newFile.write(newJSON)
+    except:
+        return False
+    else:
+        return True
 
 #builds the geoJSON file containing the info about the TMs
 def generateTMJson():
@@ -116,12 +120,22 @@ def storeNewTMLocation(id, coord):
     session.commit()
 
 def updateGWLocations(newLocs):
-    GWas = session.query(GW).all()
-    for k in GWas:
-        currentLocation = session.query(position).filter(position.ID == k.position).all()[0]
-        currentLocation.Latitude = newLocs[k.ID - 1][0]
-        currentLocation.Longitude = newLocs[k.ID - 1][1]
-    session.commit()
+    try:
+        GWas = session.query(GW).all()
+        for k in GWas:
+            currentLocation = session.query(position).filter(position.ID == k.position).all()[0]
+            currentLocation.Latitude = newLocs[k.ID - 1][0]
+            currentLocation.Longitude = newLocs[k.ID - 1][1]
+    except:
+        session.rollback()
+        return False
+    else:
+        if generateGWJson():
+            session.commit()
+            return True
+        else:
+            session.rollback()
+            return False
 
 def changeName(id, newName):
     tmToChange = session.query(TM).filter(TM.ID == id).all()[0]
