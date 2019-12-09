@@ -404,3 +404,27 @@ function changeTerminalName(id){
         }
         });
 }
+
+function displaySettings(){
+    displayError("Not yet implemented");
+    $('<div class="dialogBox settings"></div>').appendTo('body')
+        .html('<table><thead> <tr> <th>Key</th> <th>Value</th> </tr></thead> <tbody> <tr> <td>Setting</td><td>Value</td></tr><tr> <td>Setting</td><td>Value</td></tr><tr> <td>Setting</td><td>Value</td></tr><tr> <td>Setting</td><td>Value</td></tr><tr> <td>Setting</td><td>Value</td></tr><tr> <td>Setting</td><td>Value</td></tr></tbody></table>')
+        .dialog({
+        title: 'Settings',
+        autoOpen: true,
+        width: 400,
+        resizable: false,
+        buttons: {
+            Apply: function() {
+                displayInfo("No changes made");
+                $(this).dialog("close");
+            },
+            Cancel: function() {
+                $(this).dialog("close");
+            }
+        },
+        close: function(event, ui) {
+            $(this).remove();
+        }
+        });
+    }

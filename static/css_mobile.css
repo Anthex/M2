@@ -1,7 +1,7 @@
 h1
 {
     font-size: 20px;
-    width:50%;
+    width:45%;
 }
 
 #controls{
@@ -16,7 +16,7 @@ h1
 
 #info{
     font-size: 15px;
-    width:50%;
+    width:45%;
     left:auto;
     right:0px;
     top:0;
@@ -51,7 +51,19 @@ h1
 .dialog{
     bottom:70px;
 }
+@keyframes dialogAnimation{
+	from {
+		opacity:0;
+		bottom:0px;
+    }
+
+    to {
+        opacity: 1;
+		bottom:70px;
+    }
+}
 
 .test{
     display:none;
 }
+
