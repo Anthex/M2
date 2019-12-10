@@ -15,10 +15,12 @@ $(document).ready(function(){
     username = getCookie("username");
     if (username){
         displayInfo("Logged in as " + username + "<br/><a href='javascript:void(0)' onclick='logout()'>log out</a>");
-        $('#controls').append('<a class="button test" onclick="logout()" href="javascript:void(0)"> Log out </a>');
+        $('#controls').append('<a class="button" onclick="logout()" href="javascript:void(0)"> Log out </a>');
+        $('#attr').append("Logged in as " + username);
     }else{
         displayError("You are not logged in<br/><a href='/login'>log in</a>");
-        $('#controls').append('<a class="button test" href="/login"> Login </a>');
+        $('#controls').append('<a class="button" href="/login"> Login </a>');
+        $('#attr').append("Not logged in");
     }
 });
 

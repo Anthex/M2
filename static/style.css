@@ -79,12 +79,14 @@ a{
 }
 #attr{
 	position: absolute;
-	bottom: -10px;
+	font-size: 25px;
+	bottom: 10px;
 	left: 10px;
 	z-index: 6;
 	color:#000;
 	margin:0;
 	padding:0;
+	white-space: none;
 }
 
 .leaflet-popup-content-wrapper,
