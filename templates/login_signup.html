@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <link rel="stylesheet" type="text/css" href="{{css_url}}">
+        <link href="https://fonts.googleapis.com/css?family=Raleway:200" rel="stylesheet">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    
+        <script type="text/javascript" src="static/scrypt.js"></script>
+        <script type="text/javascript" src="static/login.js"></script>
+        <script type="text/javascript" src="static/cookies.js"></script>
+        
+</head>
+
+<body>
+<h1>Login or sign up</h1>
+    <div id=form>
+        <div class="container" id="signup">
+            <h2>Sign up</h2>
+            <form>
+                <input id="u1" name="username" type="text" placeholder="Username" autocomplete="off"/> <br /> 
+                <input id="p1" name="password" type="password" placeholder = "password" autocomplete="off"/> <br /> 
+                <input id="s1" name="password_conf" type="password" placeholder = "confirm password" autocomplete="off"/> <br /> 
+                <button type="submit" form="form1" value="Submit" id="send_signup" onclick="signup()">Sign up</button>
+            </form>
+        </div>
+
+        <div class="container" id="login">
+            <h2>Login</h2>
+            <form>
+                <input id="u2" name="username" type="text" placeholder="Login" autocomplete="off"/> <br /> 
+                <input id = "s2" name="password" type="password" placeholder = "password" autocomplete="off"/> <br /> 
+                <button type="submit" form="form1" value="Submit" id="send_login"onclick="login()">Login</button>
+            </form>
+        </div>
+</div>
+
+</body>
+</html>
+<script> </script> <!-- fixes chrome bug of onload transition-->

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import requests
 import database
+import authentication
 import trilateration
 import RSSIBuffer
 from flask.logging import create_logger
@@ -95,25 +96,84 @@ def processRSSI():
 
 @app.route("/updateGWLocations", methods=['POST', 'GET'])
 def updateGWLocations():
-     newInfo = request.get_json()
-     newInfo_array = []
-     for k in newInfo:
-          newInfo_array.append(((k["l"]["lat"]), (k["l"]["lng"])))
-     result = database.updateGWLocations(newInfo_array)
-     database.generateGWJson()
-     if result:
-          return ("success", 200)
+     username = request.args.get("username")
+     token = request.args.get("token")
+     request_validity = authentication.checkToken(username, token)
+     if request_validity == 0:
+          AC = authentication.getAccessStructure(username)
+          if not AC:
+               return ("Error when checking for access structure", 500)
+          else:
+               if not AC['can_edit_features']:
+                    return ("User is not authorized to edit features", 401)
+               else:
+                    newInfo = request.get_json()
+                    newInfo_array = []
+                    for k in newInfo:
+                         newInfo_array.append(((k["l"]["lat"]), (k["l"]["lng"])))
+                    result = database.updateGWLocations(newInfo_array)
+                    database.generateGWJson()
+                    if result:
+                         return ("success", 200)
+                    else:
+                         return ("error when updating GW locations", 500)
+     elif request_validity == 1:
+          return("Invalid Token", 400)
+     elif request_validity == 2:
+          return("Invalid user", 400)
      else:
-          return ("error when updating GW locations", 500)
-          
+          return("Server error", 500)
+
 @app.route("/updateName", methods=['POST', 'GET'])
 def updateName():
      id = int(request.args.get("id"))
      name = request.args.get("newName")
-     if id and len(name) > 0:
-          database.changeName(id, name)
-          return ("success", 200)
-     return ("error", 500)
+     username = request.args.get("username")
+     token = request.args.get("token")
+     request_validity = authentication.checkToken(username, token)
+     if request_validity == 0:
+          AC = authentication.getAccessStructure(username)
+          if not AC:
+               return ("Error when checking for access structure", 500)
+          else:
+               if not AC['can_edit_features']:
+                    return ("User is not authorized to edit features", 401)
+               else:
+                    if id and len(name) > 0:
+                         result = database.changeName(id, name)
+                         return ("success", 200)
+                    return ("error", 500)
+                    if result:
+                         return ("success", 200)
+                    else:
+                         return ("error when changing name", 500)
+     elif request_validity == 1:
+          return("Invalid Token", 400)
+     elif request_validity == 2:
+          return("Invalid user", 400)
+     else:
+          return("Server error", 500)
+
+
+@app.route("/login")
+def returnLoginForm():
+     return render_template('login_signup.html', css_url="static/login.css")
+
+@app.route("/authenticate")
+def check_authentication():
+     username = request.args.get("username")
+     password_hash = request.args.get("password_hash")
+     result = authentication.authenticate(username, password_hash)
+     if result == 0:
+          newTok = authentication.generateToken(username);
+          if newTok == -1:
+               return("Error when generating token", 500)
+          else:
+               return(newTok, 200)
+     elif result == 1:
+          return("Wrong password", 400)
+     elif result == -1:
+          return("User does not exist",401)
 
 #debug : disable cache
 @app.after_request

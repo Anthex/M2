@@ -138,9 +138,14 @@ def updateGWLocations(newLocs):
             return False
 
 def changeName(id, newName):
-    tmToChange = session.query(TM).filter(TM.ID == id).all()[0]
-    if tmToChange and len(newName) > 0:
-        tmToChange.Name = newName
+    try:
+        tmToChange = session.query(TM).filter(TM.ID == id).all()[0]
+        if tmToChange and len(newName) > 0:
+            tmToChange.Name = newName
+            
+    except:
+        session.rollback()
+        return False
+    else:
         session.commit()
         return True
-    return False

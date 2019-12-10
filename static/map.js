@@ -4,10 +4,23 @@ var heat;
 var HistoryLayer;
 var HistoryPathLayer;
 var TMLayer;
-
 var heatpoints = [];
 var firstShow = true; //dirty hack because hasLayer doesn't work, see if better workaround possible
-var t1, t2; //timeouts for info and error displays
+
+//load other js files
+$("head").append('<script type="text/javascript" src="static/info.js"></script>');
+$("head").append('<script type="text/javascript" src="static/cookies.js"></script>');
+
+$(document).ready(function(){
+    username = getCookie("username");
+    if (username){
+        displayInfo("Logged in as " + username + "<br/><a href='javascript:void(0)' onclick='logout()'>log out</a>");
+        $('#controls').append('<a class="button test" onclick="logout()" href="javascript:void(0)"> Log out </a>');
+    }else{
+        displayError("You are not logged in<br/><a href='/login'>log in</a>");
+        $('#controls').append('<a class="button test" href="/login"> Login </a>');
+    }
+});
 
 var mapboxlayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
     maxZoom: 24,
@@ -77,50 +90,54 @@ function showOSM(){
 
 
 function updateGatewayLocations(message) {
-    result = false;
-    $('<div class="dialogBox"></div>').appendTo('body')
-        .html('<div id="diagContent"><img src="static/images/caution.png", height=52px, width=52px></img>Any Available history for devices will be lost. This action cannot be undone.</div>')
-        .dialog({
-        title: 'Confirm Gateway repositionning',
-        autoOpen: true,
-        width: 400,
-        resizable: false,
-        buttons: {
-            Confirm: function() {
-            result = true;
-            console.log(GWLayer._layers);
-            var GWInfo = [];
-            for (var i in GWLayer._layers) {
-                var l = GWLayer._layers[i].feature.properties.id;
-                var item = {l : GWLayer._layers[i].getLatLng()};
-                GWInfo.push(item);
-            }
-            console.log(JSON.stringify(GWInfo));
-            $.ajax({
-                url: '/updateGWLocations',
-                type: 'post',
-                //dataType: 'json',
-                contentType: 'application/json',
-                success: function (data) {
-                    displayInfo('Gateways positions successfully updated');
-                    $('#target').html(data.msg);
+    var username = getCookie("username");
+    var token = getCookie("token");
+    if (username && token){
+        result = false;
+        $('<div class="dialogBox"></div>').appendTo('body')
+            .html('<div id="diagContent"><img src="static/images/caution.png", height=52px, width=52px></img>Any Available history for devices will be lost. This action cannot be undone.</div>')
+            .dialog({
+            title: 'Confirm Gateway repositionning',
+            autoOpen: true,
+            width: 400,
+            resizable: false,
+            buttons: {
+                Confirm: function() {
+                result = true;
+                console.log(GWLayer._layers);
+                var GWInfo = [];
+                for (var i in GWLayer._layers) {
+                    var l = GWLayer._layers[i].feature.properties.id;
+                    var item = {l : GWLayer._layers[i].getLatLng()};
+                    GWInfo.push(item);
+                }
+                console.log(JSON.stringify(GWInfo));
+                $.ajax({
+                    url: '/updateGWLocations?username='+username+'&token='+token,
+                    type: 'post',
+                    //dataType: 'json',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        displayInfo('Gateways positions successfully updated');
+                    },
+                    error: function (data) {
+                        displayError('Could not update database : ' + data.responseText);
+                    },
+                    data: JSON.stringify(GWInfo)
+                });
+                $(this).dialog("close");
                 },
-                error: function (data) {
-                    displayError('Could not update database');
-                    $('#target').html(data.msg);
-                },
-                data: JSON.stringify(GWInfo)
-            });
-            $(this).dialog("close");
+                Cancel: function() {
+                $(this).dialog("close");
+                }
             },
-            Cancel: function() {
-            $(this).dialog("close");
+            close: function(event, ui) {
+                $(this).remove();
             }
-        },
-        close: function(event, ui) {
-            $(this).remove();
+            });
+        }else{
+            displayError("You need to be logged in to perform this action</br><a href='/login'>log in</a>");
         }
-        });
     };
 
 function createCustomIcon (feature, latlng) {
@@ -284,41 +301,7 @@ function geoJson2heat(geojson, intensity) {
     });
     }
 
-function displayInfo(text='Success', time=3000){
-    clearTimeout(t1);
-    clearTimeout(t2);
-    [].forEach.call(document.querySelectorAll('.dialog'),function(e){
-        e.parentNode.removeChild(e);
-      });
-    $('<div id="success" class="dialog"></div>').hide().appendTo('body')
-    .html(text)
-    .show();
 
-    t1 = setTimeout(function() {
-        $('#success').fadeOut('slow');
-    }, time);
-    t2 = setTimeout(function() {
-        $('#success').remove();
-    }, time+1000);
-};
-
-function displayError(text='Error', time=3000){
-    clearTimeout(t1);
-    clearTimeout(t2);
-    [].forEach.call(document.querySelectorAll('.dialog'),function(e){
-        e.parentNode.removeChild(e);
-      });
-    $('<div id="error" class="dialog"></div>').hide().appendTo('body')
-    .html(text)
-    .show();
-
-    t1 = setTimeout(function() {
-        $('#error').fadeOut('slow');
-    }, time);
-    t2 = setTimeout(function() {
-        $('#error').remove();
-    }, time+1000);
-};
 
 function sendBeepDialog(id){
     getTMNameById(TMLayer);
@@ -359,6 +342,9 @@ function getTMNameById(id,layer=TMLayer){
 }
 
 function changeTerminalName(id){
+    var username = getCookie("username");
+    var token = getCookie("token");
+    if (username && token){
     $('<div class="dialogBox"></div>').appendTo('body')
         .html('<div id="diagContent">Change name of <span  style="font-weight:bold">' + getTMNameById(id) + '</span> to : <input placeholder="New name" type="text" autocomplete="off" id="newName"></div>')
         .dialog({
@@ -369,8 +355,6 @@ function changeTerminalName(id){
         buttons: {
             Confirm: function() {
                 var newName = document.getElementById("newName").value;
-
-                
                 if (newName){
                     console.log(id, newName);
                     $.ajax({
@@ -378,7 +362,9 @@ function changeTerminalName(id){
                     type: 'get',
                     data: $.param({
                         id:id,
-                        newName:newName
+                        newName:newName,
+                        username:username,
+                        token:token
                     }),
                     success: function (data) {
                         displayInfo('Name changed successfully');
@@ -387,7 +373,7 @@ function changeTerminalName(id){
                         }, 0);
                     },
                     error: function (data) {
-                        displayError('Could not change name');
+                        displayError('Could not change name : ' + data.responseText);
                     },
                 });
                     $(this).dialog("close");
@@ -403,6 +389,9 @@ function changeTerminalName(id){
             $(this).remove();
         }
         });
+    }else{
+        displayError("You need to be logged in to perform this action</br><a href='/login'>log in</a>");
+    }
 }
 
 function displaySettings(){
@@ -427,4 +416,11 @@ function displaySettings(){
             $(this).remove();
         }
         });
+    }
+
+    function logout(){
+        //send revocation request to server
+        eraseCookie("username");
+        eraseCookie("token");
+        document.location.reload();
     }
