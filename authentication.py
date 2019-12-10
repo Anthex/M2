@@ -21,6 +21,9 @@ class user(base):
     is_admin = Column(Boolean, default=0)
     can_edit_features = Column(Boolean, default=0) #update GW, rename TM
     can_beep = Column(Boolean, default=0) 
+    req_admin = Column(Boolean, default=0)
+    req_edit = Column(Boolean, default=0)
+    req_beep = Column(Boolean, default=0)
     pass_hash = Column(String(128))
     token = Column(String(128))
     token_date = Column(DateTime(timezone=True), server_default=func.now())
@@ -78,3 +81,43 @@ def getAccessStructure(username):
         return access
     else:
         return None #user not found
+
+def getPermissions(username, token):
+    result = ""
+    permissions_dict = getAccessStructure(username)
+    for perm in permissions_dict:
+        if permissions_dict[perm]:
+            result += perm + ", "
+    result = result[:-2]
+    return result
+
+def requestPermissions(username, token, req_admin, req_edit, req_beep):
+    sought_user = session.query(user).filter(user.username == username).all()
+    if sought_user:
+        sought_user=sought_user[0]
+        if sought_user.token == token:
+            try:
+                sought_user.req_admin = req_admin
+                sought_user.req_edit = req_edit
+                sought_user.req_beep = req_beep
+            except:
+                session.rollback()
+                return -1 #server error
+            else:
+                session.commit()
+                return 0
+        else:
+            return 1 #invalid token
+    else:
+        return 2 #user not found
+
+def getPending(username):
+    sought_user = session.query(user).filter(user.username == username).all()
+    if sought_user:
+        sought_user=sought_user[0]
+        if sought_user.req_admin or sought_user.req_edit or sought_user.req_beep:
+            return 1
+        else:
+            return 0
+    else:
+        return -1 #user not found

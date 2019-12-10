@@ -5,6 +5,9 @@ CREATE TABLE user (
 	is_admin boolean,
 	can_edit_features boolean,
 	can_beep boolean,
+	req_admin boolean,
+	req_edit boolean,
+	req_beep boolean,
 	pass_hash text,
 	token text,
 	token_date datetime

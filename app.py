@@ -29,7 +29,7 @@ def dashboard():
      #app.logger.info(GWs)
 
      database.generateTMJson()
-     return render_template('dashboard.html', css_mobile_url="static/css_mobile.css", css_url="static/style.css", mapscript_url="static/map.js", heat_url="static/leaflet-heat.js")
+     return render_template('dashboard.html')
 
 #update record TM GeoJSON
 @app.route("/update")
@@ -157,7 +157,7 @@ def updateName():
 
 @app.route("/login")
 def returnLoginForm():
-     return render_template('login_signup.html', css_url="static/login.css")
+     return render_template('login_signup.html')
 
 @app.route("/authenticate")
 def check_authentication():
@@ -174,6 +174,49 @@ def check_authentication():
           return("Wrong password", 400)
      elif result == -1:
           return("User does not exist",401)
+
+@app.route("/getPermissions")
+def getPermissions():
+     username = request.args.get("username")
+     token = request.args.get("token")
+     if username:
+          return authentication.getPermissions(username, token)
+     else:
+          return ("Could not identify user", 401)
+
+@app.route("/requestNewPermissions", methods=['POST'])
+def requestNewPermissions():
+     username = request.args.get("username")
+     token = request.args.get("token")
+     admin = int(request.args.get("admin") == "true")
+     edit = int(request.args.get("edit") == "true")
+     beep = int(request.args.get("beep") == "true")
+     result = authentication.requestPermissions(username, token, admin, edit, beep)
+
+     if result == 0:
+          return ("OK", 200)
+     elif result == -1:
+          return ("Server error", 500)
+     elif result == 1:
+          return ("Invalid token", 401)
+     elif result == 2:
+          return ("user not found", 400)
+     else:
+          return ("Unknown error", 500)
+
+
+
+
+@app.route("/getPermissionsPending")
+def getPermissionsPending():
+     username = request.args.get("username")
+     result = authentication.getPending(username)
+     if result == -1:
+          return ("Server error", 500)
+     elif result == 1:
+          return("1", 200)
+     else:
+          return("0", 200)
 
 #debug : disable cache
 @app.after_request

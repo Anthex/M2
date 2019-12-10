@@ -8,8 +8,8 @@ var heatpoints = [];
 var firstShow = true; //dirty hack because hasLayer doesn't work, see if better workaround possible
 
 //load other js files
-$("head").append('<script type="text/javascript" src="static/info.js"></script>');
-$("head").append('<script type="text/javascript" src="static/cookies.js"></script>');
+$("head").append('<script type="text/javascript" src="static/scripts/info.js"></script>');
+$("head").append('<script type="text/javascript" src="static/scripts/cookies.js"></script>');
 
 $(document).ready(function(){
     username = getCookie("username");
