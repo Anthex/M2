@@ -17,6 +17,23 @@ $(document).ready(function(){
         displayInfo("Logged in as " + username + "<br/><a href='javascript:void(0)' onclick='logout()'>log out</a>");
         $('#controls').append('<a class="button" onclick="logout()" href="javascript:void(0)"> Log out </a>');
         $('#attr').append("Logged in as " + username);
+        var nbNotifs = 9;
+        if(username == 'admin'){
+            $.ajax({
+                url: '/getPendingUsersNumber',
+                type: 'get',
+                success: function (data) {
+                    nbNotifs = data;
+                    $('#controls').append('<a nn="'+data.toString()+'" id="btn_adm" class="button adminPanelShowButton" onclick="showAdminPanel()" href="javascript:void(0)"> Admin panel </a>');
+                    if(data!=0) $('#btn_adm').addClass("new_notifications");
+                },
+                error: function (data) {
+                    displayError("Error : could not get number of notifications");
+                    console.log(data);
+                },
+            });
+
+        }
     }else{
         displayError("You are not logged in<br/><a href='/login'>log in</a>");
         $('#controls').append('<a class="button" href="/login"> Login </a>');
@@ -506,3 +523,10 @@ function requestNewPermissions(){
             displayError("You need to be logged in to perform this action</br><a href='/login'>log in</a>");
         }
 }
+
+function showAdminPanel(){
+    document.location = "/adminPanel?username=" + getCookie("username") + "&token=" + getCookie("token");
+
+}
+
+console.log(getCookie("token"));

@@ -6,7 +6,7 @@ import geojson
 
 DBNAME='objects.db'
 
-engine = create_engine('sqlite:///'+DBNAME,connect_args={'check_same_thread': False})
+engine = create_engine('sqlite:///db/'+DBNAME,connect_args={'check_same_thread': False})
 base = declarative_base()
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -58,7 +58,7 @@ def generateGWJson():
             if c != Coordinates[-1]:
                 newJSON += ','
         newJSON += ']}'
-        newFile = open("static/GW.geojson", "w+")
+        newFile = open("static/geojson/GW.geojson", "w+")
         newFile.write(newJSON)
     except:
         return False
@@ -79,7 +79,7 @@ def generateTMJson():
         if c != Coordinates[-1]:
             newJSON += ','
     newJSON += ']}'
-    newFile = open("static/TM.geojson", "w+")
+    newFile = open("static/geojson/TM.geojson", "w+")
     newFile.write(newJSON)
     return True
 
@@ -92,7 +92,7 @@ def generateTMHistory(id, nbRecords=20):
         if record != history[-1]:
             newJSON += ','
     newJSON += ']}'
-    newFile = open("static/history.geojson", "w+")
+    newFile = open("static/geojson/history.geojson", "w+")
     newFile.write(newJSON)
     return True
 
@@ -105,7 +105,7 @@ def generateTMHistoryPath(id,nbRecords=20):
         if record != history[-1]:
             newJSON += ','
     newJSON += ']}}]}'
-    newFile = open("static/history_path.geojson", "w+")
+    newFile = open("static/geojson/history_path.geojson", "w+")
     newFile.write(newJSON)
     return True
 

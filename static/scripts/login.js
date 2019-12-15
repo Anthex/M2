@@ -1,10 +1,11 @@
 $("head").append('<script type="text/javascript" src="static/scripts/info.js"></script>');
 $(document).ready(function(){
-    $('#s1').keypress(function(e){
+    $('#u2').focus();
+    $('#s1, #p1, #u1').keypress(function(e){
       if(e.keyCode==13)
       $('#send_signup').click();
     });
-    $('#s2').keypress(function(e){
+    $('#s2, #u2').keypress(function(e){
         if(e.keyCode==13)
         $('#send_login').click();
       });
@@ -25,6 +26,25 @@ function signup(){
                     scrypt.encode_utf8("sel"),
                     16384, 8, 1, 64));
                     enc = scrypt.to_hex(enc);
+                    $.ajax({
+                        url: '/register?username='+username+'&token='+token,
+                        type: 'post',
+                        data: $.param({
+                            id:id,
+                            newName:newName,
+                            username:username,
+                            token:token
+                        }),
+                        success: function (data) {
+                            displayInfo('Name changed successfully');
+                            setTimeout(function() {
+                                updateTMLocations();
+                            }, 0);
+                        },
+                        error: function (data) {
+                            displayError('Could not change name : ' + data.responseText);
+                        },
+                    });
                 });
                 
                 displayInfo("client-side ok " + enc);

@@ -11,6 +11,8 @@ $error_color: rgba(255, 0, 21, 0.5);
 
 $test_warning_background: rgba(250, 0, 42, 0.8);
 
+$popup_background: rgba(255, 255, 255, 0.685);
+
 //grays
 $color_12: #333;
 $color_9: #575757;
@@ -230,23 +232,47 @@ a {
 	display: inline-block;
 	cursor: pointer;
 	color: #000;
-	margin: 5px;
-	margin-top: 2px;
-	margin-bottom: 2px;
+	margin: 5px 2px 5px 2px;
 	padding: 10px;
 	border: 0px solid #000000;
 	font-size: 20px;
 	text-decoration: none;
-	transition-duration: 0.1s;
 	font-weight: bolder;
+	vertical-align: middle;
 	&:hover {
 		background-color: $main_color;
 		color: #fff;
-		transition-duration: 0.1s;
 	}
 	&:active {
 		position: relative;
 		top: 1px;
+	}		
+	&.adminPanelShowButton{
+		transition-duration: .3s;
+		color: #fff;
+		background: rgb(131,58,180);
+		background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 0%, rgba(252,121,69,1) 100%);
+		&:hover{
+			transition-duration: .3s;
+			background: linear-gradient(0deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 0%, rgba(252,121,69,1) 100%);
+		}
+	}
+	&.new_notifications::after{
+		content: attr(nn);
+		animation: shift .5s ease-in-out infinite alternate;
+		font-size: 18px;
+		position: absolute;
+		background: #0052be;
+		color: rgb(255, 255, 255);
+		margin-top:-20px;
+		margin-left:-5px;
+		border-radius: 20px;
+		height: 25px;
+		width: 25px;
+		text-align: center;
+		-webkit-box-shadow: 5px 5px 5px -4px rgba(0,0,0,0.75);
+		-moz-box-shadow: 5px 5px 5px -4px rgba(0,0,0,0.75);
+		box-shadow: 5px 5px 5px -4px rgba(0,0,0,0.75);
 	}
 }
 .ui-widget-content {
@@ -256,18 +282,18 @@ a {
 	z-index: 2000 !important;
 	font-family: $font_family_1 !important;
 	font-size: 20px !important;
-	background: rgba(255, 255, 255, 0) !important;
+	background: transparent !important;
 }
 .ui-dialog {
-	transition-duration: .05s !important;
 	padding: 0px !important;
 	border: 0px solid $main_color !important;
 	backdrop-filter: blur(4px) !important;
-	background: rgba(255,255,255,.7) !important;
+	background: $popup_background !important;
 	border-radius: 5px !important;
 	-webkit-box-shadow: 2px 2px 17px -5px rgba(0,0,0,0.75);
 	-moz-box-shadow: 2px 2px 17px -5px rgba(0,0,0,0.75);
 	box-shadow: 2px 2px 17px -5px rgba(0,0,0,0.75);
+
 	img {
 		padding: 0px !important;
 		float: left !important;
@@ -417,7 +443,7 @@ a {
 	border-radius: 20px;
 	backdrop-filter: blur(4px);
 	animation: dialogAnimation .2s ease-out;
-	& a {
+	a {
 		text-decoration: underline;
 		color: #fff;
 	}

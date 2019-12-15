@@ -8,7 +8,7 @@ import time
 
 DBNAME='users.db'
 
-engine = create_engine('sqlite:///'+DBNAME,connect_args={'check_same_thread': False})
+engine = create_engine('sqlite:///db/'+DBNAME,connect_args={'check_same_thread': False})
 base = declarative_base()
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -122,3 +122,36 @@ def getPending(username):
             return 0
     else:
         return -1 #user not found
+
+def getPendingUsersNumber():
+    users = session.query(user).filter(user.req_admin or user.req_beep or user.req_edit.all).all()
+    return str(len(users))
+
+def generateUsersJSON():
+    output = '{'
+    users = session.query(user).all()
+    for u in users:
+        output += '"' + u.username + '":{"username":"'
+        output += str(u.username) + '",'
+
+        output += '"id":'+str(u.ID)
+
+        output += ',"permissions":{'
+        output += '"is_admin":' + str(int(u.is_admin))
+        output += ',"can_view_map":' + str(int(u.can_view_map))
+        output += ',"can_edit_features":' + str(int(u.can_edit_features))
+        output += ',"can_beep":' + str(int(u.can_beep))
+        output += '},'
+
+        output += '"requests":{'
+        output += '"req_admin":' + str(int(u.req_admin))
+        output += ',"req_edit":' + str(int(u.req_edit))
+        output += ',"req_beep":' + str(int(u.req_beep))
+        output += '}'
+
+        output += '}'
+        if u != users[-1]:
+            output += ','
+
+    output += '}'
+    return output

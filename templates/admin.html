@@ -4,19 +4,41 @@
         
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
-        <link rel="stylesheet" type="text/css" href="static/admin.css">
+        <link rel="stylesheet" type="text/css" href="static/style/admin.css">
+        
         <link href="https://fonts.googleapis.com/css?family=Raleway:200" rel="stylesheet">
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet" />
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
         <script type="text/javascript" src="static/scripts/cookies.js"></script>
+        <script type="text/javascript" src="static/scripts/admin.js"></script>
         
 </head>
 
 <body>
 <h1>Administration panel</h1>
 
+<div id="usersDiv">
+<table >
+        <thead>
+                <tr>
+                        <td> ID </td>
+                        <td> Username </td>
+                        <td class="small"> Is Admin </td>
+                        <td class="small"> Can view map </td>
+                        <td class="small"> Can edit features </td>
+                        <td class="small"> Can beep </td>
+                        
+                        <td> Request </td>
+                        <td> Actions </td>
+                </tr>
+        </thead>
+	<tbody id="usersTable">
+	</tbody>
+</table>
+</div>
 
+<a href="/">Back</a>
 </body>
 </html>

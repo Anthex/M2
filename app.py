@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
 
 def readJSON(name):
-     return app.open_resource('static/'+name+'.geojson').read().decode('UTF-8')
+     return app.open_resource('static/geojson'+name+'.geojson').read().decode('UTF-8')
 
 @app.route("/")
 def dashboard():
@@ -52,12 +52,12 @@ def update():
 @app.route("/getTerminalPositions")
 def getTerminalPositions():
      database.generateTMJson()
-     return app.send_static_file("TM.geojson")
+     return app.send_static_file("geojson/TM.geojson")
 
 #return geoJSON file containing the GW positions
 @app.route("/getGatewayPositions",methods=['GET'])
 def getGatewayPositions():
-     return app.send_static_file("GW.geojson")
+     return app.send_static_file("geojson/GW.geojson")
 
 #incoming : 3 RSSIs + ID, output : WGS coordinates + ID (stored in db)
 #check request with regex
@@ -85,12 +85,12 @@ def sendBeepRequest():
 @app.route("/history")
 def generateHistory():
      database.generateTMHistory(int(request.args.get("id")))
-     return app.send_static_file("history.geojson")
+     return app.send_static_file("geojson/history.geojson")
 
 @app.route("/history_path")
 def generateHistoryPath():
      database.generateTMHistoryPath(int(request.args.get("id")))
-     return app.send_static_file("history_path.geojson")
+     return app.send_static_file("geojson/history_path.geojson")
 
 #args : GW ID, RSSI value, TM id
 @app.route("/processRSSI", methods=['POST', 'GET'])
@@ -170,6 +170,15 @@ def updateName():
 def returnLoginForm():
      return render_template('login_signup.html')
 
+@app.route("/adminPanel")
+def renderAdmin():
+     username = request.args.get("username")
+     token = request.args.get("token")
+     if not authentication.checkToken(username, token) and authentication.getAccessStructure(username)["is_admin"]:
+          return render_template('admin.html')
+     else:
+          return ("Not authorized", 401)
+
 @app.route("/authenticate")
 def check_authentication():
      username = request.args.get("username")
@@ -237,6 +246,14 @@ def getPermissionsPending():
           return("1", 200)
      else:
           return("0", 200)
+
+@app.route("/getPendingUsersNumber")
+def getNotificationsNumber():
+     return authentication.getPendingUsersNumber()
+
+@app.route("/getUsers.json")
+def generateUsersList():
+     return authentication.generateUsersJSON()
 
 #debug : disable cache
 @app.after_request
