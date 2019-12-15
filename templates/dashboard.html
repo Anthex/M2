@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	
+
 	<title>Dashboard</title>
 
 	<meta charset="utf-8" />
@@ -9,9 +9,10 @@
 	
 	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
 
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
-    <link rel="stylesheet" type="text/css" href="static/style/style.css">
-    <link rel="stylesheet" type="text/css" media='screen and (min-width: 200px) and (max-width: 1200px)' href="static/style/css_mobile.css"/>
+    <!--<link rel="stylesheet" type="text/css" href="static/style/style.css">-->
+    <!--<link rel="stylesheet" type="text/css" media='screen and (min-width: 200px) and (max-width: 1200px)' href="static/style/css_mobile.css"/> -->
     <link href="https://fonts.googleapis.com/css?family=Raleway:200" rel="stylesheet">
     
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og==" crossorigin=""></script>
@@ -22,13 +23,32 @@
     <!--leaflet plugins-->
     <script src="static/scripts/leaflet-heat.js"></script>
 
+    <script>
+        less = {
+          env: "development",
+          async: false,
+          fileAsync: false,
+          poll: 1000
+        };
+      </script>
+    <!--
+    <link rel="stylesheet/less" type="text/css" href="static/style/style_l.less" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.9.0/less.min.js" ></script>
+    -->
+
+    {% assets "scss_all" %}
+    <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+    {% endassets %}
+
 </head>
 <body>
 
 
 <h1> LoRa geolocation map </h1>
 <div id="mapid"></div>
-<script src="static/scripts/map.js"></script>
+{% assets "js_map" %}
+<script src="{{ ASSET_URL }}"></script>
+{% endassets %}
 <div id ="info"></div>
 <div id="controls">
     <a class="button" id="MB" onclick="darkMode()" href="javascript:void(0)"> Light mode </a> <br/>

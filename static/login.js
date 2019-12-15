@@ -23,8 +23,27 @@ function signup(){
                 scrypt_module_factory(function (scrypt) {
                     enc = (scrypt.crypto_scrypt(scrypt.encode_utf8(pass1),
                     scrypt.encode_utf8("sel"),
-                    16384, 8, 1, 64));
+                    16384, 8, 1, 64));a
                     enc = scrypt.to_hex(enc);
+                    $.ajax({
+                        url: '/register?username='+username+'&token='+token,
+                        type: 'post',
+                        data: $.param({
+                            id:id,
+                            newName:newName,
+                            username:username,
+                            token:token
+                        }),
+                        success: function (data) {
+                            displayInfo('Name changed successfully');
+                            setTimeout(function() {
+                                updateTMLocations();
+                            }, 0);
+                        },
+                        error: function (data) {
+                            displayError('Could not change name : ' + data.responseText);
+                        },
+                    });
                 });
                 
                 displayInfo("client-side ok " + enc);

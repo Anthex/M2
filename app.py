@@ -9,17 +9,28 @@ from werkzeug.datastructures import ImmutableMultiDict
 import random
 import urllib
 
+from flask_assets import Environment, Bundle
+
 app = Flask(__name__,static_url_path='/static')
 log = create_logger(app)
 database.generateTMJson()
 database.generateGWJson()
+
+assets = Environment(app)
+assets.url = app.static_url_path
+scss = Bundle('style/style.scss', filters='pyscss, cssmin', output='style/all.css')
+assets.register('scss_all', scss)
+
+js = Bundle('scripts/map.js', filters='jsmin', output='scripts/min/main.js')
+assets.register('js_map', js)
 
 app.config.update(
      ENV = "development"
 )
 
 if __name__ == "__main__":
-     app.run(debug=True,host='0.0.0.0')
+     app.run(debug=True,host='0.0.0.0')     
+
 
 def readJSON(name):
      return app.open_resource('static/'+name+'.geojson').read().decode('UTF-8')
@@ -204,8 +215,17 @@ def requestNewPermissions():
      else:
           return ("Unknown error", 500)
 
+@app.route("/register", methods = ['POST'])
+def registerNewUser():
+     username = request.args.get("username")
+     pass_hash = request.args.get("pass_hash")
+     newTok = authentication.generateToken(username, pass_hash)
 
-
+     result = authentication.register(username, pass_hash)
+     if result:
+          return (newTok, 200)
+     else:
+          return("Server error", 500)
 
 @app.route("/getPermissionsPending")
 def getPermissionsPending():
@@ -221,13 +241,10 @@ def getPermissionsPending():
 #debug : disable cache
 @app.after_request
 def add_header(r):
-    """
-    Add headers to both force latest IE rendering engine or Chrome Frame,
-    and also to cache the rendered page for 10 minutes.
-    """
-    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    r.headers["Pragma"] = "no-cache"
-    r.headers["Expires"] = "0"
-    r.headers['Cache-Control'] = 'public, max-age=0'
-    return r
+     return r
+     r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+     r.headers["Pragma"] = "no-cache"
+     r.headers["Expires"] = "0"
+     r.headers['Cache-Control'] = 'public, max-age=0'
+     return r
 

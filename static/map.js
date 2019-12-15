@@ -12,6 +12,8 @@ $("head").append('<script type="text/javascript" src="static/scripts/info.js"></
 $("head").append('<script type="text/javascript" src="static/scripts/cookies.js"></script>');
 
 $(document).ready(function(){
+    setTimeout(function(){ map.invalidateSize(); map.fitBounds(GWLayer.getBounds());}, 2000);
+    console.log("ready");
     username = getCookie("username");
     if (username){
         displayInfo("Logged in as " + username + "<br/><a href='javascript:void(0)' onclick='logout()'>log out</a>");
@@ -282,6 +284,7 @@ function showHistory(e) {
 
 }
 function onMapClick(e) {
+    
     /*
     if (!firstShow){
         map.removeLayer(heat);

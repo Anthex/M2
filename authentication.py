@@ -66,6 +66,7 @@ def generateToken(username, size=128):
         return token
 
 def register(username, password_hash):
+    newUser = user(username=username, pass_hash=password_hash)
     return True
 
 def getAccessStructure(username):
