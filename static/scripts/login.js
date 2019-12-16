@@ -27,27 +27,20 @@ function signup(){
                     16384, 8, 1, 64));
                     enc = scrypt.to_hex(enc);
                     $.ajax({
-                        url: '/register?username='+username+'&token='+token,
+                        url: '/register?username='+username+'&pass_hash='+enc,
                         type: 'post',
-                        data: $.param({
-                            id:id,
-                            newName:newName,
-                            username:username,
-                            token:token
-                        }),
                         success: function (data) {
-                            displayInfo('Name changed successfully');
-                            setTimeout(function() {
-                                updateTMLocations();
-                            }, 0);
+                            displayInfo('Registered successfully');
+                            setCookie("token", data);
+                            document.getElementById("u2").value = username;
+                            document.getElementById("s2").value = pass1;
+                            login();
                         },
                         error: function (data) {
-                            displayError('Could not change name : ' + data.responseText);
+                            displayError('Could not register user : ' + data.responseText);
                         },
                     });
                 });
-                
-                displayInfo("client-side ok " + enc);
             }else{
                 displayError("Passwords don't match");
                 $("#s1").addClass("false");

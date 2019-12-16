@@ -228,13 +228,15 @@ def requestNewPermissions():
 def registerNewUser():
      username = request.args.get("username")
      pass_hash = request.args.get("pass_hash")
-     newTok = authentication.generateToken(username, pass_hash)
-
+     newTok = authentication.generateToken(username)
      result = authentication.register(username, pass_hash)
-     if result:
-          return (newTok, 200)
-     else:
-          return("Server error", 500)
+     if not result:
+          return (str(newTok), 200)
+     if result == 1:
+          return ("User already exists", 400)
+     if result == 2:
+          return ("Error when adding user to database", 500)
+     return("Server error", 500)
 
 @app.route("/getPermissionsPending")
 def getPermissionsPending():
@@ -254,6 +256,64 @@ def getNotificationsNumber():
 @app.route("/getUsers.json")
 def generateUsersList():
      return authentication.generateUsersJSON()
+
+@app.route("/approvePermissions")
+def approvePermissions():
+     id = int(request.args.get("id"))
+     username = request.args.get("username")
+     token = request.args.get("token")
+     if not authentication.checkToken(username, token) and authentication.getAccessStructure(username)["is_admin"]:
+          authentication.approveUser(id)
+     else:
+          return ("Not authorized", 401)
+     return ("OK", 200)
+     
+
+@app.route("/denyPermissions")
+def denyPermissions():
+     uid = int(request.args.get("id"))
+     username = request.args.get("username")
+     token = request.args.get("token")
+     if not authentication.checkToken(username, token) and authentication.getAccessStructure(username)["is_admin"]:
+          if not authentication.denyUser(uid):
+               return ("OK", 200)
+          else:
+               return ("Server error", 500)
+     else:
+          return ("Not authorized", 401)
+     return ("Unknown error", 500)
+
+@app.route("/revokeUser")
+def revokeUser():
+     uid = int(request.args.get("id"))
+     username = request.args.get("username")
+     token = request.args.get("token")
+     if not authentication.checkToken(username, token) and authentication.getAccessStructure(username)["is_admin"]:
+          if not authentication.revokeUserPrivileges(uid):
+               return ("OK", 200)
+          else:
+               return ("Server error", 500)
+     else:
+          return ("Not authorized", 401)
+     return ("Unknown error", 500)
+
+@app.route("/deleteUser")
+def deleteUser():
+     uid = int(request.args.get("id"))
+     username = request.args.get("username")
+     token = request.args.get("token")
+     if not authentication.checkToken(username, token) and authentication.getAccessStructure(username)["is_admin"]:
+          result = authentication.deleteUser(uid)
+          if not result:
+               return ("OK", 200)
+          elif result == 2:
+               return("User not found", 400)
+          else:
+               return ("Server error", 500)
+     else:
+          return ("Not authorized", 401)
+     return ("Unknown error", 500)
+
 
 #debug : disable cache
 @app.after_request

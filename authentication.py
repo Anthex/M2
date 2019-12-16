@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, DateTime, Boolean
+from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, DateTime, Boolean, or_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.sql import func
@@ -66,8 +66,19 @@ def generateToken(username, size=128):
         return token
 
 def register(username, password_hash):
-    newUser = user(username=username, pass_hash=password_hash)
-    return True
+    if session.query(user).filter(user.username == username).all():
+        return 1
+    else:
+        try:
+            newUser = user(username=username, pass_hash=password_hash)
+            session.add(newUser)
+        except:
+            session.rollback()
+            return 2
+        else:
+            session.commit()
+            return 0
+        return -1
 
 def getAccessStructure(username):
     sought_user = session.query(user).filter(user.username == username).all()
@@ -116,7 +127,7 @@ def getPending(username):
     sought_user = session.query(user).filter(user.username == username).all()
     if sought_user:
         sought_user=sought_user[0]
-        if sought_user.req_admin or sought_user.req_edit or sought_user.req_beep:
+        if sought_user.req_admin + sought_user.req_edit + sought_user.req_beep:
             return 1
         else:
             return 0
@@ -124,7 +135,7 @@ def getPending(username):
         return -1 #user not found
 
 def getPendingUsersNumber():
-    users = session.query(user).filter(user.req_admin or user.req_beep or user.req_edit.all).all()
+    users = session.query(user).filter(or_(or_(user.req_admin , user.req_beep), user.req_edit)).all()
     return str(len(users))
 
 def generateUsersJSON():
@@ -155,3 +166,56 @@ def generateUsersJSON():
 
     output += '}'
     return output
+
+def approveUser(uid):
+    sought_user = session.query(user).filter(user.ID == uid).all()
+    if sought_user:
+        sought_user=sought_user[0]
+        sought_user.can_edit_features = max(sought_user.can_edit_features, sought_user.req_edit)
+        sought_user.is_admin = max(sought_user.is_admin, sought_user.req_admin)
+        sought_user.can_beep = max(sought_user.can_beep, sought_user.req_beep)
+
+        sought_user.req_edit = sought_user.req_admin = sought_user.req_beep = 0
+        return 0
+    else:
+        return None #user not found
+    return 1
+
+def denyUser(uid):
+    sought_user = session.query(user).filter(user.ID == uid).all()
+    if sought_user:
+        sought_user=sought_user[0]
+        sought_user.req_edit = sought_user.req_admin = sought_user.req_beep = 0
+        return 0
+    else:
+        return None #user not found
+    return 1
+
+def revokeUserPrivileges(uid):
+    sought_user = session.query(user).filter(user.ID == uid).all()
+    if sought_user:
+        sought_user=sought_user[0]
+        sought_user.req_edit = sought_user.req_admin = sought_user.req_beep = 0
+        sought_user.can_edit_features = 0
+        sought_user.is_admin = 0
+        sought_user.can_beep = 0
+        return 0
+    else:
+        return None #user not found
+    return 1
+
+def deleteUser(uid):
+    sought_user = session.query(user).filter(user.ID == uid).all()
+    if sought_user:
+        sought_user=sought_user[0]
+        try:
+            session.delete(sought_user)
+        except:
+            session.rollback()
+            return 1
+        else:
+            session.commit()
+            return 0
+    else:
+        return 2 #user not found
+    return 1
