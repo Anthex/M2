@@ -24,6 +24,7 @@ $(document).ready(function(){
                 type: 'get',
                 success: function (data) {
                     nbNotifs = data;
+                    $('#controls').append('<a id="btn_calibration" <a class="button test adminPanelShowButton" onclick="showCalibration()" href="javascript:void(0)">Calibration</a>');
                     $('#controls').append('<a nn="'+data.toString()+'" id="btn_adm" class="button adminPanelShowButton" onclick="showAdminPanel()" href="javascript:void(0)"> Admin panel </a>');
                     if(data!=0) $('#btn_adm').addClass("new_notifications");
                 },
@@ -417,11 +418,11 @@ function displaySettings(){
     var username = getCookie("username");
     var token = getCookie("token");
     $('<div class="dialogBox settings"></div>').appendTo('body')
-        .html('<table><thead> <tr> <th>Key</th><th>Value</th> </tr></thead> ' + 
+        .html(/*'<table><thead> <tr> <th>Key</th><th>Value</th> </tr></thead> ' + 
         '<tbody> <tr> <td>Setting</td><td>Value</td></tr><tr> ' + 
-        '<td>Setting</td><td>Value</td></tr></tbody></table>' + 
-        '<p style="font-weight:bold"> user : ' + username + '</p>' +
-        '<p style="font-weight:bold" id="perm">Permissions : </p>' +
+        '<td>Setting</td><td>Value</td></tr></tbody></table>' + */
+        '<p><span style="font-weight:bold"> User : </span>' + username + '</p>' +
+        '<p id="perm"><span style="font-weight:bold"> Permissions : </span></p>' +
         '<a href="javascript:void(0)" class="infoButton" onclick="requestNewPermissions()">Request new permissions</a>' +
         '<div id="pending"></div>')
         .dialog({
@@ -431,7 +432,6 @@ function displaySettings(){
         resizable: false,
         buttons: {
             Apply: function() {
-                displayInfo("No changes made");
                 $(this).dialog("close");
             },
             Cancel: function() {
@@ -527,6 +527,52 @@ function requestNewPermissions(){
 function showAdminPanel(){
     document.location = "/adminPanel?username=" + getCookie("username") + "&token=" + getCookie("token");
 
+}
+
+var calibrationPoint = null;
+
+function showCalibration(){
+ $('#calibrationControls').fadeIn('fast');
+ if (!calibrationPoint) calibrationPoint = new L.marker(map.getCenter(), {
+    draggable: 'true',
+    className: "calibrationPoint"
+  });
+  calibrationPoint.addTo(map);
+  L.DomUtil.addClass(calibrationPoint._icon, 'calibrationPoint');
+  console.log(calibrationPoint);
+}
+
+function beginCalibration(){
+    var campaignID = $('#campaign_id').val();
+    $('#mapid').addClass('blurry');
+    $('#container').fadeIn('slow');
+    setProgressBarMax($('#nbSamples').val());
+    //setProgressBarValue(3);
+
+    // SEND INFO TO SERVER AND CHECK STATUS IN LOOP
+    // PASS lat, long and nbSamples
+}
+
+function hideCalibration(){
+    $('#calibrationControls').fadeOut('fast');
+    calibrationPoint.remove();
+    
+    $('#mapid').removeClass('blurry');
+    $('#container').fadeOut('slow');
+}
+
+function cancelFingerprinting(){
+    setProgressBarValue(0);
+    $('#container').fadeOut('slow');
+    $('#mapid').removeClass('blurry');
+
+}
+
+function onFingerPrintComplete(){
+    $('#mapid').removeClass('blurry');
+    $('#container').fadeOut('slow');
+    setTimeout(function() { resetWithoutAnimation(); }, 1000);
+    displayInfo('Fingerprint successfully saved')
 }
 
 console.log(getCookie("token"));

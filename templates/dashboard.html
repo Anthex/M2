@@ -60,7 +60,27 @@
     <a class="button test" onclick="displayError('not yet implemented')" href="javascript:void(0)"> ➕ </a> 
     <a class="button test" onclick="displaySettings()" href="javascript:void(0)"> ⚙️ </a>
 </div>
+
+<div id="container"></div>
+<div id="calibrationControls">
+  <h3>Calibration mode</h3>
+
+		<label class="description" for="element_1">Campaign ID </label>
+		<input id="campaign_id" name="element_1" class="element text small" type="number" maxlength="255" value="1"/> <br/>
+		<label class="description" for="element_2">Number of samples </label>
+    <input id="nbSamples" name="element_2" class="element text small" type="number" maxlength="255" value="5"/> 
+
+
+  <div id="calibration_buttons">
+    <a class="button"  onclick="beginCalibration()" href="javascript:void(0)"> Begin Calibration </a>
+    <a class="button"  onclick="hideCalibration()" href="javascript:void(0)"> Stop </a>
+  </div>
+</div>
+
 <div id="attr"></div>
 
 </body>
+
+<script src="static/scripts/progressbar.js"></script>
+<script src="static/scripts/progressbar_samples.js"></script>
 </html>

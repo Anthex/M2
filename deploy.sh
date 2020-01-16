@@ -5,3 +5,4 @@ export FLASK_APP = app.py
 
 cat db/schema.sql | sqlite3
 cat db/user_schema.sql | sqlite3
+cat db/fingerprint_schema.sql | sqlite3
